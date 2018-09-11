@@ -285,7 +285,7 @@ def train_keras_model(x, y):
         stale = EarlyStopping(monitor='loss', patience=3)
 
         model.compile(optimizer='adam', loss='binary_crossentropy')
-        model.fit(x=x, y=y, epochs=10, callbacks=[stale], batch_size=64)
+        model.fit(x=x, y=y, epochs=10, callbacks=[stale], batch_size=13)
 
     return model
 
