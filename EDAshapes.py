@@ -507,11 +507,19 @@ def run_big_model():
     x_folder = 'data/clipped_images'
     y_folder = 'data/clipped_masks'
 
+    counter = 0
     for file_ in listdir(x_folder):
+        if counter > 600:
+            break
         x.append(np.load(join(x_folder, file_)))
+        counter += 1
     
+    counter = 0
     for file_ in listdir(y_folder):
+        if counter > 600:
+            break
         y.append(np.load(join(y_folder, file_)))
+        counter += 1
 
     model = train_keras_model(np.asarray(x), np.asarray(y))
 
