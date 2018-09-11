@@ -313,7 +313,7 @@ if __name__ == '__main__':
     x = []
     y = []
 
-    for i in range(64):
+    for i in range(169):
         with open(f'data/shapes/6040_2_2/mask{i}.pkl', 'rb') as open_file:
             k = pkl.load(open_file)
             assert k.shape == (256, 256)
