@@ -446,7 +446,7 @@ def make_masks(target_class='Trees'):
 
         print(f'saving mask')
         print(f'mask shape: {mask.shape}')
-        print(f'nonzero_values: {np.nonzero_values(mask)}')
+        print(f'nonzero_values: {np.count_nonzero(mask)}')
 
         np.save(f'data/masks/{image_id}_mask.npy', mask)    
     
