@@ -444,7 +444,11 @@ def make_masks(target_class='Trees'):
         perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, 3391], [0,3349], size=[3391, 3349])
         mask = make_mask([3391,3349], perimeters, interiors)
 
-        np.save(f'data/masks/{image_id}_mask.npy', mask)
+        print(f'saving mask')
+        print(f'mask shape: {mask.shape}')
+        print(f'nonzero_values: {np.nonzero_values(mask)}')
+
+        np.save(f'data/masks/{image_id}_mask.npy', mask)    
     
     return
 
@@ -494,7 +498,7 @@ def make_clipped_images():
 if __name__ == '__main__':
     image_IDs = get_image_IDs()
 
-    make_clipped_images()
+    make_masks()
     '''
     at one point, I ran this to make a 19-channel image for each file
     for ID in image_IDs:
