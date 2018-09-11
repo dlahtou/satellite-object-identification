@@ -149,6 +149,8 @@ def make_warp(img1, img2):
     shape1 = img1.shape
     shape2 = img2.shape
 
+    print(f'original shape {shape1}')
+
     x1 = shape1[0]
     y1 = shape1[1]
 
