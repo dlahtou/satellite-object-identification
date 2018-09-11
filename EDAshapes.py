@@ -178,8 +178,12 @@ def make_warp(img1, img2):
 
     matrix = np.eye(2,3).astype(np.float32)
 
-    _, matrix = cv2.findTransformECC(img2, img1, matrix,
-                                     motionType=cv2.MOTION_EUCLIDEAN)
+    criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 1000, 1e-7)
+    try:
+        _, matrix = cv2.findTransformECC(img2, img1, matrix,
+                                         motionType=cv2.MOTION_EUCLIDEAN, criteria=criteria)
+    except:
+        pass
     
     return matrix
 
