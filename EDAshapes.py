@@ -108,6 +108,8 @@ def make_vertices_lists(polygons, x_range, y_range, size=[256, 256]):
         return ([get_pixel_coords(format_coords(polygons.exterior.coords),
                     size, x_range, y_range)],
                [])
+    elif isinstance(polygons, shapely.geometry.polygon.LinearRing):
+        return [], []
 
     perimeters = [get_pixel_coords(format_coords(polygon.exterior.coords),
                     size, x_range, y_range)
