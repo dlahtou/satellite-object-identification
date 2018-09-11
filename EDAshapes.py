@@ -503,7 +503,7 @@ def make_clipped_images():
 if __name__ == '__main__':
     image_IDs = get_image_IDs()
 
-    make_masks()
+    make_clipped_images()
     '''
     at one point, I ran this to make a 19-channel image for each file
     for ID in image_IDs:
