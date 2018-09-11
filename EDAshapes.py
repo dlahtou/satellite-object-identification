@@ -434,6 +434,7 @@ def make_masks(target_class='Trees'):
     
     with open('data/grid_sizes.csv', 'r') as open_file:
         grids = pd.read_csv(open_file)
+    grids.set_index('Unnamed: 0', inplace=True)
 
     parent_folder = 'data/masks'
     if not isdir(parent_folder):
