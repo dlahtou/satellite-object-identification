@@ -15,6 +15,7 @@ from keras.layers.merge import concatenate
 from keras.callbacks import EarlyStopping
 from tensorflow.metrics import mean_iou
 import shapely
+from osgeo import gdal
 
 
 with open('data/grid_sizes.csv', 'r') as open_file:
@@ -134,6 +135,45 @@ def make_mask(size, perimeters, interiors):
     cv2.fillPoly(mask, interiors, 0)
 
     return mask
+
+def make_warp(img1, img2):
+    '''
+    Returns a warp matrix that aligns image 1 to image 2
+
+    image 1 can then be warped onto image 2
+
+    Assume: Image 2 is the larger image
+    '''
+
+    shape1 = img1.shape
+    shape2 = img2.shape
+
+    x1 = shape1[0]
+    y1 = shape1[1]
+
+    x2 = shape2[0]
+    y2 = shape2[1]
+
+    if shape1 != shape2:
+        img1 = cv2.resize(img1, (shape2[1], shape2[0]),
+                          interpolation=cv2.INTER_CUBIC)
+
+    img1 = img1[int(x1*0.2):int(x1*0.8), int(y1*0.2):int(y1*0.8),:]
+    img1 = img1[int(x2*0.2):int(x2*0.8), int(y2*0.2):int(y2*0.8),:]
+    
+    img1 = rescale_image_values(img1)*255
+    img2 = rescale_image_values(img2)*255
+
+    img1 = np.sum(img1, axis=2)
+    img2 = np.sum(img2, axis=2)
+
+    matrix = np.eye(2,3)
+
+    _, matrix = cv2.findTransformECC(img2, img1, matrix,
+                                     motionType=cv2.MOTION_EUCLIDEAN)
+    
+    return matrix
+
 
 def break_shapes(wkt, size=[3391, 3349], x_width=xmax, y_height=ymin, filename="6040_2_2", graph=False):
     '''saves 169 256x256 binary masks for a corresponding image'''
@@ -300,17 +340,76 @@ def rescale_image_values(img):
 
     img = (img - min_) / max_
 
-    img.clip(0, 1)
+    img.clip(0., 1.)
     img = np.reshape(img, shape1)
 
     return img
 
-if __name__ == '__main__':
+def get_image_IDs():
     with open('data/train_wkt_v4.csv', 'r') as open_file:
-        shapes = pd.read_csv(open_file)
-    break_shapes(shapes.iloc[4,2], graph=False)
+        data = pd.read_csv(open_file)
 
-    x = []
+    IDs = data['ImageId'].unique()
+
+    return IDs
+
+def save_multiband_image(image_id):
+    paths = dict()
+    paths['RGB'] = f'data/three_band/{image_id}.tif'
+    paths['A'] = f'data/sixteen_band/{image_id}_A.tif'
+    paths['M'] = f'data/sixteen_band/{image_id}_M.tif'
+    paths['P'] = f'data/sixteen_band/{image_id}_P.tif'
+
+    images = dict()
+    for key, path in paths.items():
+        ds = gdal.Open(path, GA_ReadOnly)
+        image = ds.ReadAsArray()
+        images[key] = image
+    
+    target_shape = images['RGB'].shape
+
+    # calculate warp matrix
+    warps = dict()
+    for key, image in images.items():
+        if key == 'RGB':
+            continue
+        warps[key] = make_warp(image, images['RGB'])
+    
+    # perform transform
+    warped_images = dict()
+    for key, warp in warps.items():
+        warped_images[key] = cv2.warpAffine(images[key], warp,
+                                            (target_shape[1], target_shape[0]),
+                                            flags= cv2.INTER_CUBIC + cv2.WARP_INVERSE_MAP,
+                                            borderMode = cv2.BORDER_REPLICATE)
+    
+    # concatenate images
+    out_image = rescale_image_values(images['RGB'])
+    for image in warped_images.values():
+        res_image = rescale_image_values(image)
+        out_image = np.concatenate((out_image, res_image), axis=2)
+    
+    parent_folder = 'data/combined_images'
+    if not isdir(parent_folder):
+        mkdir(parent_folder)
+
+    out_path = f'data/combined_images/{image_id}.npz'
+    np.savez(out_path, out_image)
+
+    return
+
+
+if __name__ == '__main__':
+    image_IDs = get_image_IDs()
+    for ID in image_IDs:
+        save_multiband_image(ID)
+
+
+    '''with open('data/train_wkt_v4.csv', 'r') as open_file:
+        shapes = pd.read_csv(open_file)
+    break_shapes(shapes.iloc[4,2], graph=False)'''
+
+    '''x = []
     y = []
 
     for i in range(169):
@@ -325,9 +424,9 @@ if __name__ == '__main__':
             k = np.moveaxis(k, 0, 2)
             x.append(k)
 
-    model = train_keras_model(np.asarray(x), np.asarray(y))
+    #model = train_keras_model(np.asarray(x), np.asarray(y))
 
-    '''v = model.predict(np.asarray(x[:2]))
+    #v = model.predict(np.asarray(x[:2]))
     print(np.sum(x[0], axis=2))
 
     sub_image = 18
