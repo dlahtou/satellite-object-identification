@@ -161,7 +161,7 @@ def make_warp(img1, img2):
         img1 = cv2.resize(img1, (shape2[1], shape2[0]),
                           interpolation=cv2.INTER_CUBIC)
 
-    img1 = img1[int(x1*0.2):int(x1*0.8), int(y1*0.2):int(y1*0.8),:] if shape1[2] > 1 else img1[int(x1*0.2):int(x1*0.8), int(y1*0.2):int(y1*0.8),1]
+    img1 = img1[int(x1*0.2):int(x1*0.8), int(y1*0.2):int(y1*0.8),:] if shape1[2] > 1 else img1[int(x1*0.2):int(x1*0.8), int(y1*0.2):int(y1*0.8),0]
     img2 = img2[int(x2*0.2):int(x2*0.8), int(y2*0.2):int(y2*0.8),:]
 
     print(f'img1 warp shape: {img1.shape}')
