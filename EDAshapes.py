@@ -376,8 +376,11 @@ def save_multiband_image(image_id):
             images[key] = np.expand_dims(image, 2)
         else:
             images[key] = np.transpose(image, (1, 2, 0))
+        
+        print(f'{key} shape: {images[key].shape}')
 
     target_shape = images['RGB'].shape
+
 
     # calculate warp matrix
     warps = dict()
