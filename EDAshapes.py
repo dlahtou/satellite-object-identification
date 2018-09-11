@@ -403,7 +403,7 @@ def save_multiband_image(image_id):
     for key, warp in warps.items():
         warped_images[key] = cv2.warpAffine(images[key], warp,
                                             (target_shape[1], target_shape[0]),
-                                            flags= cv2.INTER_CUBIC + cv2.WARP_INVERSE_MAP,
+                                            flags= cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP,
                                             borderMode = cv2.BORDER_REPLICATE)
     
     # concatenate images
