@@ -7,13 +7,13 @@ from shapely.wkt import loads
 from osgeo import ogr
 import pickle as pkl
 from os.path import join, isdir, isfile
-from os import mkdir
+from os import mkdir, listdir
 import cv2
 import tensorflow as tf
 from keras.layers import BatchNormalization, Conv2D, Dense, Conv2DTranspose, Input, MaxPooling2D, Concatenate
 from keras.models import Model
 from keras.layers.merge import concatenate
-from keras.callbacks import EarlyStopping
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.metrics import mean_iou
 import shapely
 from osgeo import gdal
@@ -288,7 +288,7 @@ def train_model(x):
 
 def train_keras_model(x, y):
     with tf.device('/gpu:0'):
-        inputs = Input((256,256,3))
+        inputs = Input((256,256,19))
 
         layer_1 = Conv2D(64, [3, 3], activation='elu', padding='same')(inputs)
         layer_2 = Conv2D(64, [3, 3], activation='elu', padding='same')(layer_1)
@@ -338,8 +338,12 @@ def train_keras_model(x, y):
 
         stale = EarlyStopping(monitor='loss', patience=3)
 
+        checkpoint_model = ModelCheckpoint('my_model.h5', verbose=1, save_best_only=True)
+
         model.compile(optimizer='adam', loss='binary_crossentropy')
-        model.fit(x=x, y=y, epochs=10, callbacks=[stale], batch_size=16)
+        model.fit(x=x, y=y, epochs=10, callbacks=[stale, checkpoint_model], batch_size=16)
+
+        model.save('my_model.h5')
 
     return model
 
@@ -495,15 +499,27 @@ def make_clipped_images():
                 
                 counter += 1
 
-
         
+def run_big_model():
+    x = []
+    y = []
 
+    x_folder = 'data/clipped_images'
+    y_folder = 'data/clipped_masks'
+
+    for file_ in listdir(x_folder):
+        x.append(np.load(file_))
+    
+    for file_ in listdir(y_folder):
+        y.append(np.load(file_))
+
+    model = train_keras_model(np.asarray(x), np.asarray(y))
 
 
 if __name__ == '__main__':
     image_IDs = get_image_IDs()
 
-    make_clipped_images()
+    run_big_model()
     '''
     at one point, I ran this to make a 19-channel image for each file
     for ID in image_IDs:
