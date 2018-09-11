@@ -372,8 +372,11 @@ def save_multiband_image(image_id):
     for key, path in paths.items():
         ds = gdal.Open(path, GA_ReadOnly)
         image = ds.ReadAsArray()
-        images[key] = image
-    
+        if key == 'P':
+            images[key] = np.expand_dims(image, 2)
+        else:
+            images[key] = np.transpose(image, (1, 2, 0))
+
     target_shape = images['RGB'].shape
 
     # calculate warp matrix
@@ -382,9 +385,6 @@ def save_multiband_image(image_id):
         if key == 'RGB':
             continue
         print(f'warping {key}')
-        if not image:
-            print(f'{key} has no value!')
-            continue
         warps[key] = make_warp(image, images['RGB'])
     
     # perform transform
