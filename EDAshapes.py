@@ -448,14 +448,57 @@ def make_masks(target_class='Trees'):
     
     return
 
+def make_clipped_images():
+    image_IDs = get_image_IDs()
+
+    clipped_shapes_folder = 'data/clipped_masks'
+    if not isdir(clipped_shapes_folder):
+        mkdir(clipped_shapes_folder)
+    
+    clipped_images_folder = 'data/clipped_images'
+    if not isdir(clipped_images_folder):
+        mkdir(clipped_images_folder)
+
+    for image_id in image_IDs:
+        npz = np.load(f'data/combined_images/{image_id}.npz')
+        for i in npz.values():
+            image_array = i
+        
+        image_mask = np.load(f'data/masks/{image_id}_mask.npy')
+
+        counter = 0
+        for i in range(13):
+            for j in range(13):
+                clipped_image = image_array[i*256:(i+1)*256, j*256:(j+1)*256, :]
+                clipped_mask = image_mask[i*256:(i+1)*256, j*256:(j+1)*256]
+                if np.count_nonzero(clipped_mask) == 0:
+                    continue
+
+                clipped_mask = np.expand_dims(clipped_mask, axis=2)
+
+                # save clipped image
+                np.save(f'data/clipped_images/{image_id}_clip_{counter}.npy', clipped_image)
+
+                # save clipped mask
+                np.save(f'data/clipped_masks/{image_id}_mask_{counter}.npy', clipped_mask)
+                
+                counter += 1
+
+
+        
+
+
+
 if __name__ == '__main__':
     image_IDs = get_image_IDs()
+
+    make_clipped_images()
     '''
     at one point, I ran this to make a 19-channel image for each file
     for ID in image_IDs:
         save_multiband_image(ID)'''
 
-    make_masks()
+    #make_masks()
     #break_shapes(shapes.iloc[4,2], graph=False)
 
     '''x = []
