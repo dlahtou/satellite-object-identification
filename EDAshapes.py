@@ -17,6 +17,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.metrics import mean_iou
 import shapely
 from osgeo import gdal
+from keras import backend as K
 
 
 with open('data/grid_sizes.csv', 'r') as open_file:
@@ -95,6 +96,16 @@ def get_pixel_coords(coords, size, x_range, y_range):
 
     return coords
 
+def mean_iou(y_true, y_pred):
+    prec = []
+    for t in np.arange(0.5, 1.0, 0.05):
+        y_pred_ = tf.to_int32(y_pred > t)
+        score, up_opt = tf.metrics.mean_iou(y_true, y_pred_, 2)
+        K.get_session().run(tf.local_variables_initializer())
+        with tf.control_dependencies([up_opt]):
+            score = tf.identity(score)
+        prec.append(score)
+    return K.mean(K.stack(prec), axis=0)
 
 def make_vertices_lists(polygons, x_range, y_range, size=[256, 256]):
     if not polygons:
@@ -336,11 +347,11 @@ def train_keras_model(x, y):
 
         model = Model(inputs=[inputs], outputs=[outputs])
 
-        stale = EarlyStopping(monitor='loss', patience=3)
+        stale = EarlyStopping(monitor='loss', patience=3, verbose=1)
 
         checkpoint_model = ModelCheckpoint('my_model.h5', verbose=1, save_best_only=True)
 
-        model.compile(optimizer='adam', loss='binary_crossentropy')
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
         model.fit(x=x, y=y, epochs=10, callbacks=[stale, checkpoint_model], batch_size=16)
 
         model.save('my_model.h5')
