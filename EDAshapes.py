@@ -304,7 +304,7 @@ if __name__ == '__main__':
     y = []
 
     for i in range(64):
-        with open(f'data/shapes/6040_2_2/masks/mask{i}.pkl', 'rb') as open_file:
+        with open(f'data/shapes/6040_2_2/mask{i}.pkl', 'rb') as open_file:
             k = pkl.load(open_file)
             assert k.shape == (256, 256)
             k = np.expand_dims(k, axis=2)
