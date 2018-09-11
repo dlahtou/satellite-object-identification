@@ -6,7 +6,7 @@ from osgeo.gdalconst import GA_ReadOnly
 from shapely.wkt import loads
 from osgeo import ogr
 import pickle as pkl
-from os.path import join, isdir
+from os.path import join, isdir, isfile
 from os import mkdir
 import cv2
 import tensorflow as tf
@@ -363,6 +363,10 @@ def save_multiband_image(image_id):
     paths['A'] = f'data/sixteen_band/{image_id}_A.tif'
     paths['M'] = f'data/sixteen_band/{image_id}_M.tif'
     paths['P'] = f'data/sixteen_band/{image_id}_P.tif'
+
+    for path in paths.values():
+        print(path)
+        assert isfile(path)
 
     images = dict()
     for key, path in paths.items():
