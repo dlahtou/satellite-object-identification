@@ -254,7 +254,16 @@ def train_keras_model(x, y):
         layer_10 = Conv2D(512, [3, 3], activation='elu', padding='same')(layer_9)
         layer_11 = Conv2D(512, [3, 3], activation='elu', padding='same')(layer_10)
 
-        layer_12 = Conv2DTranspose(256, (2,2), strides=(2,2), padding='same')(layer_11)
+        final_depth = MaxPooling2D(pool_size=(2,2))(layer_11)
+        final_conv = Conv2D(1024, [3,3], activation='elu', padding='same')(final_depth)
+        final_conv2 = Conv2D(1024, [3,3], activation='elu', padding='same')(final_conv)
+
+        final_upconv = Conv2DTranspose(512, (2,2), strides=(2,2), padding='same')(final_conv2)
+        final_con = concatenate([layer_10, final_upconv])
+        final_re = Conv2D(512, [3, 3], activation='elu', padding='same')(final_con)
+        final_re2 = Conv2D(512, [3, 3], activation='elu', padding='same')(final_re)
+
+        layer_12 = Conv2DTranspose(256, (2,2), strides=(2,2), padding='same')(final_re2)
         layer_13 = concatenate([layer_7, layer_12])
         layer_14 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_13)
         layer_15 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_14)
