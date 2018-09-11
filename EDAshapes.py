@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.patches import Polygon
+from osgeo.gdalconst import GA_ReadOnly
 from shapely.wkt import loads
 from osgeo import ogr
 import pickle as pkl
