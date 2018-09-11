@@ -436,7 +436,7 @@ def make_masks(target_class='Trees'):
         mkdir(parent_folder)
     
     for image_id in image_IDs:
-        image_shapes = shapes.loc[shapes['ImageId'] == image_id and shapes['ClassType'] == 5]['MultipolygonWKT']
+        image_shapes = shapes.loc[(shapes['ImageId'] == image_id) & (shapes['ClassType'] == 5)]['MultipolygonWKT'].values[0]
 
         perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, 3391], [0,3349], size=[3391, 3349])
         mask = make_mask([3391,3349], perimeters, interiors)
