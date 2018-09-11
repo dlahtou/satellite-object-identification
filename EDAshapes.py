@@ -338,7 +338,7 @@ def train_keras_model(x, y):
         stale = EarlyStopping(monitor='loss', patience=3)
 
         model.compile(optimizer='adam', loss='binary_crossentropy')
-        model.fit(x=x, y=y, epochs=10, callbacks=[stale], batch_size=13)
+        model.fit(x=x, y=y, epochs=10, callbacks=[stale], batch_size=16)
 
     return model
 
@@ -425,16 +425,35 @@ def save_multiband_image(image_id):
 
     return
 
+def make_masks(target_class='Trees'):
+    image_IDs = get_image_IDs()
+
+    with open('data/train_wkt_v4.csv', 'r') as open_file:
+        shapes = pd.read_csv(open_file)
+
+    parent_folder = 'data/masks'
+    if not isdir(parent_folder):
+        mkdir(parent_folder)
+    
+    for image_id in image_IDs:
+        image_shapes = shapes[shapes['ImageId'] == image_id and shapes['ClassType'] == 5]['MultipolygonWKT']
+
+        perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, 3391], [0,3349], size=[3391, 3349])
+        mask = make_mask([3391,3349], perimeters, interiors)
+
+        np.save(f'data/masks/{image_id}_mask.npy', mask)
+    
+    return
 
 if __name__ == '__main__':
     image_IDs = get_image_IDs()
+    '''
+    at one point, I ran this to make a 19-channel image for each file
     for ID in image_IDs:
-        save_multiband_image(ID)
+        save_multiband_image(ID)'''
 
-
-    '''with open('data/train_wkt_v4.csv', 'r') as open_file:
-        shapes = pd.read_csv(open_file)
-    break_shapes(shapes.iloc[4,2], graph=False)'''
+    make_masks()
+    #break_shapes(shapes.iloc[4,2], graph=False)
 
     '''x = []
     y = []
