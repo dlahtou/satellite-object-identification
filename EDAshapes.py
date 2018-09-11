@@ -304,12 +304,12 @@ if __name__ == '__main__':
     y = []
 
     for i in range(64):
-        with open(f'/home/dlahtou/6040_2_2/masks/mask{i}.pkl', 'rb') as open_file:
+        with open(f'data/shapes/6040_2_2/masks/mask{i}.pkl', 'rb') as open_file:
             k = pkl.load(open_file)
             assert k.shape == (256, 256)
             k = np.expand_dims(k, axis=2)
             y.append(k)
-        with open(f'/home/dlahtou/6040_2_2/imgs/image{i}', 'rb') as open_file:
+        with open(f'data/three_band/clipped/6040_2_2/image{i}', 'rb') as open_file:
             k = pkl.load(open_file)
             assert k.shape == (3, 256, 256)
             k = np.moveaxis(k, 0, 2)
