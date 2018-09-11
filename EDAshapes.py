@@ -465,6 +465,8 @@ def make_clipped_images():
             image_array = i
         
         image_mask = np.load(f'data/masks/{image_id}_mask.npy')
+        print(f'mask {image_id}: {image_mask.shape}')
+        print(np.count_nonzero(image_mask))
 
         counter = 0
         for i in range(13):
