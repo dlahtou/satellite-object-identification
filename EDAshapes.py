@@ -108,8 +108,6 @@ def make_vertices_lists(polygons, x_range, y_range, size=[256, 256]):
         return ([get_pixel_coords(format_coords(polygons.exterior.coords),
                     size, x_range, y_range)],
                [])
-    elif isinstance(polygons, shapely.geometry.polygon.LinearRing):
-        return [], []
 
     perimeters = [get_pixel_coords(format_coords(polygon.exterior.coords),
                     size, x_range, y_range)
@@ -433,6 +431,9 @@ def make_masks(target_class='Trees'):
 
     with open('data/train_wkt_v4.csv', 'r') as open_file:
         shapes = pd.read_csv(open_file)
+    
+    with open('data/grid_sizes.csv', 'r') as open_file:
+        grids = pd.read_csv(open_file)
 
     parent_folder = 'data/masks'
     if not isdir(parent_folder):
@@ -441,7 +442,10 @@ def make_masks(target_class='Trees'):
     for image_id in image_IDs:
         image_shapes = shapes.loc[(shapes['ImageId'] == image_id) & (shapes['ClassType'] == 5)]['MultipolygonWKT'].values[0]
 
-        perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, 3391], [0,3349], size=[3391, 3349])
+        xmax = grids.loc[image_id, 'Xmax']
+        ymin = grids.loc[image_id, 'Ymin']
+
+        perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, xmax], [ymin,0], size=[3391, 3349])
         mask = make_mask([3391,3349], perimeters, interiors)
 
         print(f'saving mask')
