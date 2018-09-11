@@ -381,6 +381,10 @@ def save_multiband_image(image_id):
     for key, image in images.items():
         if key == 'RGB':
             continue
+        print(f'warping {key}')
+        if not image:
+            print(f'{key} has no value!')
+            continue
         warps[key] = make_warp(image, images['RGB'])
     
     # perform transform
