@@ -508,10 +508,10 @@ def run_big_model():
     y_folder = 'data/clipped_masks'
 
     for file_ in listdir(x_folder):
-        x.append(np.load(file_))
+        x.append(np.load(join(x_folder, file_)))
     
     for file_ in listdir(y_folder):
-        y.append(np.load(file_))
+        y.append(np.load(join(y_folder, file_)))
 
     model = train_keras_model(np.asarray(x), np.asarray(y))
 
