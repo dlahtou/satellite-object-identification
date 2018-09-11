@@ -160,7 +160,10 @@ def make_warp(img1, img2):
                           interpolation=cv2.INTER_CUBIC)
 
     img1 = img1[int(x1*0.2):int(x1*0.8), int(y1*0.2):int(y1*0.8),:]
-    img1 = img1[int(x2*0.2):int(x2*0.8), int(y2*0.2):int(y2*0.8),:]
+    img2 = img2[int(x2*0.2):int(x2*0.8), int(y2*0.2):int(y2*0.8),:]
+
+    print(f'img1 warp shape: {img1.shape}')
+    print(f'output warp shape: {img2.shape}')
     
     img1 = rescale_image_values(img1)*255
     img2 = rescale_image_values(img2)*255
