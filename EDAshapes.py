@@ -118,7 +118,8 @@ def make_vertices_lists(polygons, x_range, y_range, size=[256, 256]):
     interiors = [get_pixel_coords(format_coords(polygon.interior.coords),
                     size, x_range, y_range)
                     for exterior in polygons
-                    for polygon in exterior.interiors]
+                    for polygon in exterior.interiors
+                    if not isinstance(polygon, shapely.geometry.polygon.LinearRing)]
     
     return perimeters, interiors
 
