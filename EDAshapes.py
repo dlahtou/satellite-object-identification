@@ -332,9 +332,12 @@ def train_keras_model(x, y):
 
 def rescale_image_values(img):
     shape1 = img.shape
-    img = np.reshape(img,
-                    [shape1[0] * shape1[1], shape1[2]]
-                    ).astype(np.float32)
+    if len(shape1) == 3:
+        img = np.reshape(img,
+                        [shape1[0] * shape1[1], shape1[2]]
+                        ).astype(np.float32)
+    elif len(shape1) == 2:
+        img = np.reshape(img, [shape1[0] * shape1[1]]).astype(np.float32)
 
     min_ = np.percentile(img, 1, axis=0)
     max_ = np.percentile(img, 99, axis=0) - min_
