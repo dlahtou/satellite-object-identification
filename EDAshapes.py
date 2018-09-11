@@ -174,7 +174,7 @@ def make_warp(img1, img2):
     img1 = img1.astype(np.float32)
     img2 = img2.astype(np.float32)
 
-    matrix = np.eye(2,3)
+    matrix = np.eye(2,3).astype(np.float32)
 
     _, matrix = cv2.findTransformECC(img2, img1, matrix,
                                      motionType=cv2.MOTION_EUCLIDEAN)
