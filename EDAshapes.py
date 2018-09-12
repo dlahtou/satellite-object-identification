@@ -90,8 +90,8 @@ def get_pixel_coords(coords, size, x_range, y_range):
     coords[:, 1] -= y_range[0]
 
     # scale coords to new size
-    coords[:, 0] *= size[0] / (x_range[1]-x_range[0])
-    coords[:, 1] *= size[1] / (y_range[1]-y_range[0])
+    coords[:, 0] *= size[1] / (x_range[1]-x_range[0])
+    coords[:, 1] *= size[0] / (y_range[1]-y_range[0])
 
 
     # pixel locations must be int
