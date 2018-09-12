@@ -18,7 +18,6 @@ from matplotlib.patches import Polygon
 from osgeo import gdal, ogr
 from osgeo.gdalconst import GA_ReadOnly
 from shapely.wkt import loads
-from tensorflow.metrics import mean_iou
 
 with open('data/grid_sizes.csv', 'r') as open_file:
     grids = pd.read_csv(open_file)
@@ -353,7 +352,7 @@ def train_keras_model(x, y):
         checkpoint_model = ModelCheckpoint('my_model.h5', verbose=1, save_best_only=True)
 
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
-        model.fit(x=x, y=y, epochs=10, callbacks=[stale, checkpoint_model], batch_size=16)
+        model.fit(x=x, y=y, epochs=4, callbacks=[stale, checkpoint_model], batch_size=16)
 
         model.save('my_model.h5')
 
@@ -443,6 +442,10 @@ def save_multiband_image(image_id):
     return
 
 def make_masks(target_class='Trees'):
+    classes = {'Trees': 5,
+                'Buildings': 1}
+
+
     image_IDs = get_image_IDs()
 
     with open('data/train_wkt_v4.csv', 'r') as open_file:
@@ -452,12 +455,12 @@ def make_masks(target_class='Trees'):
         grids = pd.read_csv(open_file)
     grids.set_index('Unnamed: 0', inplace=True)
 
-    parent_folder = 'data/masks'
+    parent_folder = f'data/masks/{target_class}'
     if not isdir(parent_folder):
         mkdir(parent_folder)
     
     for image_id in image_IDs:
-        image_shapes = shapes.loc[(shapes['ImageId'] == image_id) & (shapes['ClassType'] == 5)]['MultipolygonWKT'].values[0]
+        image_shapes = shapes.loc[(shapes['ImageId'] == image_id) & (shapes['ClassType'] == classes[target_class])]['MultipolygonWKT'].values[0]
 
         xmax = grids.loc[image_id, 'Xmax']
         ymin = grids.loc[image_id, 'Ymin']
@@ -472,7 +475,7 @@ def make_masks(target_class='Trees'):
         print(f'mask shape: {mask.shape}')
         print(f'nonzero_values: {np.count_nonzero(mask)}')
 
-        np.save(f'data/masks/{image_id}_mask.npy', mask)    
+        np.save(parent_folder + f'{image_id}_mask.npy', mask)    
     
     return
 
@@ -541,11 +544,12 @@ def run_big_model():
 if __name__ == '__main__':
     image_IDs = get_image_IDs()
 
+    make_masks('Buildings')
     #run_big_model()
     
     # at one point, I ran this to make a 19-channel image for each file
-    for ID in image_IDs:
-        save_multiband_image(ID)
+    #for ID in image_IDs:
+    #    save_multiband_image(ID)
 
     #make_clipped_images()
     #break_shapes(shapes.iloc[4,2], graph=False)
