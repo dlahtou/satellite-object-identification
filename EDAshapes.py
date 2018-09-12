@@ -93,7 +93,6 @@ def get_pixel_coords(coords, size, x_range, y_range):
     coords[:, 0] *= size[1] / (x_range[1]-x_range[0])
     coords[:, 1] *= size[0] / (y_range[1]-y_range[0])
 
-
     # pixel locations must be int
     coords = np.round(coords).astype(int)
 
@@ -465,6 +464,9 @@ def make_masks(target_class='Trees'):
 
         perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, xmax], [ymin, 0], size=[3349, 3391])
         mask = make_mask([3349,3391], perimeters, interiors)
+
+        # there's a bug somewhere, y axis is inverted
+        mask = np.flip(mask, 0)
 
         print(f'saving mask')
         print(f'mask shape: {mask.shape}')
