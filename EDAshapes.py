@@ -544,7 +544,7 @@ def run_big_model(mask_type='Buildings'):
 if __name__ == '__main__':
     image_IDs = get_image_IDs()
 
-    make_masks('Buildings')
+    #make_masks('Buildings')
     make_clipped_images('Buildings')
     #run_big_model()
     
