@@ -354,7 +354,7 @@ def train_keras_model(x, y):
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
         model.fit(x=x, y=y, epochs=4, callbacks=[stale, checkpoint_model], batch_size=16)
 
-        model.save('my_model.h5')
+        model.save('buildings_model.h5')
 
     return model
 
@@ -479,14 +479,14 @@ def make_masks(target_class='Trees'):
     
     return
 
-def make_clipped_images():
+def make_clipped_images(mask_type='Buildings'):
     image_IDs = get_image_IDs()
 
-    clipped_shapes_folder = 'data/clipped_masks'
+    clipped_shapes_folder = f'data/clipped_masks/{mask_type}'
     if not isdir(clipped_shapes_folder):
         mkdir(clipped_shapes_folder)
     
-    clipped_images_folder = 'data/clipped_images'
+    clipped_images_folder = f'data/clipped_images/{mask_type}'
     if not isdir(clipped_images_folder):
         mkdir(clipped_images_folder)
 
@@ -496,7 +496,7 @@ def make_clipped_images():
             image_array = i
         print(f'image {image_id}: {image_array.shape}')
         
-        image_mask = np.load(f'data/masks/{image_id}_mask.npy')
+        image_mask = np.load(f'data/masks/{mask_type}/{image_id}_mask.npy')
         print(f'mask {image_id}: {image_mask.shape}')
         print(np.count_nonzero(image_mask))
 
@@ -511,19 +511,19 @@ def make_clipped_images():
                 clipped_mask = np.expand_dims(clipped_mask, axis=2)
 
                 # save clipped image
-                np.save(f'data/clipped_images/{image_id}_clip_{counter}.npy', clipped_image)
+                np.save(f'{clipped_images_folder}/{image_id}_clip_{counter}.npy', clipped_image)
 
                 # save clipped mask
-                np.save(f'data/clipped_masks/{image_id}_mask_{counter}.npy', clipped_mask)
+                np.save(f'{clipped_shapes_folder}/{image_id}_mask_{counter}.npy', clipped_mask)
                 
                 counter += 1
         
-def run_big_model():
+def run_big_model(mask_type='Buildings'):
     x = []
     y = []
 
-    x_folder = 'data/clipped_images'
-    y_folder = 'data/clipped_masks'
+    x_folder = 'data/clipped_images/Buildings'
+    y_folder = 'data/clipped_masks/Buildings'
 
     counter = 0
     for file_ in listdir(x_folder):
@@ -545,6 +545,7 @@ if __name__ == '__main__':
     image_IDs = get_image_IDs()
 
     make_masks('Buildings')
+    make_clipped_images('Buildings')
     #run_big_model()
     
     # at one point, I ran this to make a 19-channel image for each file
