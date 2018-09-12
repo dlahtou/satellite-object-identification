@@ -20,8 +20,11 @@ from osgeo import gdal
 from keras import backend as K
 
 
-with open('data/grid_sizes.csv', 'r') as open_file:
+'''with open('data/grid_sizes.csv', 'r') as open_file:
     grids = pd.read_csv(open_file)
+
+with open('data/train_wkt_v4.csv', 'r') as open_file:
+    shapes = pd.read_csv(open_file)
 
 grids.set_index('Unnamed: 0', inplace=True)
 
@@ -34,8 +37,8 @@ xmax_chunk = xmax/10
 ymin_chunk = ymin/10
 
 # get wkt shapes for trees in the first image
-# wkt = loads(shapes.iloc[4,2])
-'''
+wkt = loads(shapes.iloc[4,2])
+
 fig, ax = plt.subplots(figsize=(9, 9))
 
 count = 0
@@ -198,7 +201,6 @@ def make_warp(img1, img2):
         pass
     
     return matrix
-
 
 def break_shapes(wkt, size=[3391, 3349], x_width=xmax, y_height=ymin, filename="6040_2_2", graph=False):
     '''saves 169 256x256 binary masks for a corresponding image'''
@@ -461,7 +463,7 @@ def make_masks(target_class='Trees'):
         xmax = grids.loc[image_id, 'Xmax']
         ymin = grids.loc[image_id, 'Ymin']
 
-        perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, xmax], [ymin,0], size=[3349, 3391])
+        perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, xmax], [0, ymin], size=[3349, 3391])
         mask = make_mask([3349,3391], perimeters, interiors)
 
         print(f'saving mask')
@@ -509,7 +511,6 @@ def make_clipped_images():
                 np.save(f'data/clipped_masks/{image_id}_mask_{counter}.npy', clipped_mask)
                 
                 counter += 1
-
         
 def run_big_model():
     x = []
@@ -534,17 +535,16 @@ def run_big_model():
 
     model = train_keras_model(np.asarray(x), np.asarray(y))
 
-
 if __name__ == '__main__':
-    image_IDs = get_image_IDs()
+    #image_IDs = get_image_IDs()
 
-    run_big_model()
+    #run_big_model()
     '''
     at one point, I ran this to make a 19-channel image for each file
     for ID in image_IDs:
         save_multiband_image(ID)'''
 
-    #make_masks()
+    make_masks()
     #break_shapes(shapes.iloc[4,2], graph=False)
 
     '''x = []
