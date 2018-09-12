@@ -463,7 +463,7 @@ def make_masks(target_class='Trees'):
         xmax = grids.loc[image_id, 'Xmax']
         ymin = grids.loc[image_id, 'Ymin']
 
-        perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, xmax], [0, -ymin], size=[3349, 3391])
+        perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, xmax], [ymin, 0], size=[3349, 3391])
         mask = make_mask([3349,3391], perimeters, interiors)
 
         print(f'saving mask')
