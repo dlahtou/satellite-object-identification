@@ -471,7 +471,7 @@ def make_masks(target_class='Trees'):
         # there's a bug somewhere, y axis is inverted
         mask = np.flip(mask, 0)
 
-        print(f'saving mask')
+        print(f'saving mask {image_id} into {parent_folder}')
         print(f'mask shape: {mask.shape}')
         print(f'nonzero_values: {np.count_nonzero(mask)}')
 
@@ -496,7 +496,7 @@ def make_clipped_images(mask_type='Buildings'):
             image_array = i
         print(f'image {image_id}: {image_array.shape}')
         
-        image_mask = np.load(f'data/masks/{mask_type}/{image_id}_mask.npy')
+        image_mask = np.load(f'data/masks/{mask_type}/{mask_type}{image_id}_mask.npy')
         print(f'mask {image_id}: {image_mask.shape}')
         print(np.count_nonzero(image_mask))
 
