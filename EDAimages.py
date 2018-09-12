@@ -24,7 +24,7 @@ print(ds.RasterXSize)
 print("Y height:")
 print(ds.RasterYSize)
 
-'''ds = gdal.Translate('6040_2_2_0.tif', ds, projWin = [0, 100, 100, 200])
+#ds = gdal.Translate('6040_2_2_0.tif', ds, projWin = [0, 100, 100, 200])
 
 fig = plt.figure()
 for i in range(3):
@@ -34,7 +34,7 @@ for i in range(3):
     print(i)
     print(np.min(ds_array[i,:,:]))
     print(np.max(ds_array[i,:,:]))
-plt.show()'''
+plt.show()
 
 parent_dir = 'data/three_band/clipped'
 if not isdir(parent_dir):
