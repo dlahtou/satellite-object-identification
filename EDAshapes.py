@@ -539,15 +539,15 @@ def run_big_model():
     model = train_keras_model(np.asarray(x), np.asarray(y))
 
 if __name__ == '__main__':
-    #image_IDs = get_image_IDs()
+    image_IDs = get_image_IDs()
 
-    #run_big_model()
+    run_big_model()
     '''
     at one point, I ran this to make a 19-channel image for each file
     for ID in image_IDs:
         save_multiband_image(ID)'''
 
-    make_clipped_images()
+    #make_clipped_images()
     #break_shapes(shapes.iloc[4,2], graph=False)
 
     '''x = []
