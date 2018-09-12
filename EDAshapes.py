@@ -20,7 +20,7 @@ from osgeo import gdal
 from keras import backend as K
 
 
-'''with open('data/grid_sizes.csv', 'r') as open_file:
+with open('data/grid_sizes.csv', 'r') as open_file:
     grids = pd.read_csv(open_file)
 
 with open('data/train_wkt_v4.csv', 'r') as open_file:
@@ -33,7 +33,7 @@ target_image = '6040_2_2'
 xmax = grids.loc[target_image, 'Xmax']
 ymin = grids.loc[target_image, 'Ymin']
 
-xmax_chunk = xmax/10
+'''xmax_chunk = xmax/10
 ymin_chunk = ymin/10
 
 # get wkt shapes for trees in the first image
