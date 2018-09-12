@@ -491,6 +491,7 @@ def make_clipped_images():
         npz = np.load(f'data/combined_images/{image_id}.npz')
         for i in npz.values():
             image_array = i
+        print(f'image {image_id}: {image_array.shape}')
         
         image_mask = np.load(f'data/masks/{image_id}_mask.npy')
         print(f'mask {image_id}: {image_mask.shape}')
@@ -546,7 +547,7 @@ if __name__ == '__main__':
     for ID in image_IDs:
         save_multiband_image(ID)'''
 
-    make_masks()
+    make_clipped_images()
     #break_shapes(shapes.iloc[4,2], graph=False)
 
     '''x = []
