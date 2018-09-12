@@ -1,24 +1,24 @@
+import pickle as pkl
+from os import listdir, mkdir
+from os.path import isdir, isfile, join
+
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import shapely
+import tensorflow as tf
+from keras import backend as K
+from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.layers import (BatchNormalization, Concatenate, Conv2D,
+                          Conv2DTranspose, Dense, Input, MaxPooling2D)
+from keras.layers.merge import concatenate
+from keras.models import Model
 from matplotlib.patches import Polygon
+from osgeo import gdal, ogr
 from osgeo.gdalconst import GA_ReadOnly
 from shapely.wkt import loads
-from osgeo import ogr
-import pickle as pkl
-from os.path import join, isdir, isfile
-from os import mkdir, listdir
-import cv2
-import tensorflow as tf
-from keras.layers import BatchNormalization, Conv2D, Dense, Conv2DTranspose, Input, MaxPooling2D, Concatenate
-from keras.models import Model
-from keras.layers.merge import concatenate
-from keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.metrics import mean_iou
-import shapely
-from osgeo import gdal
-from keras import backend as K
-
 
 with open('data/grid_sizes.csv', 'r') as open_file:
     grids = pd.read_csv(open_file)
@@ -430,8 +430,8 @@ def save_multiband_image(image_id):
     # concatenate images
     out_image = rescale_image_values(images['RGB'])
     for image in warped_images.values():
-        res_image = rescale_image_values(image)
-        out_image = np.concatenate((out_image, res_image), axis=2)
+        #res_image = rescale_image_values(image)
+        out_image = np.concatenate((out_image, image), axis=2)
     
     parent_folder = 'data/combined_images'
     if not isdir(parent_folder):
@@ -541,11 +541,11 @@ def run_big_model():
 if __name__ == '__main__':
     image_IDs = get_image_IDs()
 
-    run_big_model()
-    '''
-    at one point, I ran this to make a 19-channel image for each file
+    #run_big_model()
+    
+    # at one point, I ran this to make a 19-channel image for each file
     for ID in image_IDs:
-        save_multiband_image(ID)'''
+        save_multiband_image(ID)
 
     #make_clipped_images()
     #break_shapes(shapes.iloc[4,2], graph=False)
