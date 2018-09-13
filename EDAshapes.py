@@ -417,14 +417,18 @@ def save_multiband_image(image_id):
     
     # concatenate images
     out_image = rescale_image_values(images['RGB'])
-    for image in images.values():
+    print(target_shape)
+    for key, image in images.values():
         #res_image = rescale_image_values(image)
+        if key == 'RGB':
+            continue
         resized_image = cv2.resize(image, (target_shape[1], target_shape[0]))
-        print(target_shape)
         print(resized_image.shape)
         if len(resized_image.shape) == 2:
             resized_image = np.expand_dims(resized_image, axis=2)
         out_image = np.concatenate((out_image, resized_image), axis=2)
+    
+    print(out_image.shape)
     
     parent_folder = 'data/combined_images'
     if not isdir(parent_folder):
