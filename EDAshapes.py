@@ -506,6 +506,8 @@ def make_clipped_images(mask_type='Buildings', save=True):
         counter = 0
         for i in range(13):
             for j in range(13):
+                if counter > 600:
+                    break
                 clipped_image = image_array[i*256:(i+1)*256, j*256:(j+1)*256, :]
                 clipped_mask = image_mask[i*256:(i+1)*256, j*256:(j+1)*256]
                 if np.count_nonzero(clipped_mask) == 0:
