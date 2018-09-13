@@ -308,7 +308,7 @@ def train_keras_model(x, y):
         d5 = Dropout(0.1)(final_conv)
         final_conv2 = Conv2D(1024, [3,3], activation='elu', kernel_initializer='he_normal', padding='same')(d5)
 
-        final_upconv = Conv2DTranspose(512, (2,2), strides=(2,2) padding='same')(final_conv2)
+        final_upconv = Conv2DTranspose(512, (2,2), strides=(2,2), padding='same')(final_conv2)
         final_con = concatenate([layer_10, final_upconv])
         final_re = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(final_con)
         d6 = Dropout(0.1)(final_re)
@@ -512,7 +512,7 @@ def make_clipped_images(mask_type='Buildings', save=True):
                 # save clipped image
                     np.save(f'{clipped_images_folder}/{image_id}_clip_{counter}.npy', clipped_image)
 
-                    # save clipped mask
+                    # save cwarped_imageslipped mask
                     np.save(f'{clipped_shapes_folder}/{image_id}_mask_{counter}.npy', clipped_mask)
                 else:
                     return_images.append(clipped_image)
