@@ -71,7 +71,7 @@ def show_side_by_side2():
     plt.title('Identify Target')
     fig.savefig('TEST.png', transparent=True)
     plt.show()
-show_side_by_side2()
+#show_side_by_side2()
 
 
 def rescale_image_values(img):
