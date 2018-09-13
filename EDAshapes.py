@@ -18,6 +18,7 @@ from matplotlib.patches import Polygon
 from osgeo import gdal, ogr
 from osgeo.gdalconst import GA_ReadOnly
 from shapely.wkt import loads
+from keras.losses import binary_crossentropy
 
 with open('data/grid_sizes.csv', 'r') as open_file:
     grids = pd.read_csv(open_file)
@@ -107,6 +108,10 @@ def mean_iou(y_true, y_pred):
             score = tf.identity(score)
         prec.append(score)
     return K.mean(K.stack(prec), axis=0)
+
+def jaccard_ce_loss(y_true, y_pred):
+    
+
 
 def make_vertices_lists(polygons, x_range, y_range, size=[256, 256]):
     if not polygons:
@@ -273,29 +278,6 @@ def jaccard(img1, img2):
 
     return 1 - (intersection / union)    
 
-def train_model(x):
-    save_images = {}
-
-    # GO DEEP
-    layer_1 = slim.conv2d(x, 64, [3, 3])
-    layer_2 = slim.conv2d(layer_1, 64, [3, 3])
-
-    layer_3 = slim.max_pool2d(layer_2)
-
-    # GO DEEPER
-    layer_4 = slim.conv2d(layer_3, 128, [3, 3])
-    layer_5 = slim.conv2d(layer_4, 128, [3, 3])
-
-    # BRING IT BACK
-    layer_6 = slim.conv2d_transpose(layer_5, 64, [2, 2], 2)
-    combined_layers = tf.concat(layer_2, layer_6)
-    layer_7 = slim.conv2d(combined_layers, 64, [3, 3])
-    layer_8 = slim.conv2d(layer_7, 64, [3, 3])
-
-    layer_9 = slim.conv2d(layer_8)
-    pred = tf.sigmoid(layer_9)
-
-    return pred
 
 def train_keras_model(x, y):
     with tf.device('/gpu:0'):
@@ -423,7 +405,7 @@ def save_multiband_image(image_id):
     for key, warp in warps.items():
         warped_images[key] = cv2.warpAffine(images[key], warp,
                                             (target_shape[1], target_shape[0]),
-                                            flags= cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP,
+                                            flags= cv2.INTER_LINEAR,
                                             borderMode = cv2.BORDER_REPLICATE)
     
     # concatenate images
@@ -556,9 +538,18 @@ def run_big_model(mask_type='Buildings'):
     model = train_keras_model(np.asarray(x), np.asarray(y))
 
 if __name__ == '__main__':
+    
+
     image_IDs = get_image_IDs()
 
-    #make_masks('Buildings')
+    for ID in image_IDs():
+        save_multiband_image(ID)
+
+    a = np.load('data/combined_images/6040_2_2.npz')
+    for i in range(3,19):
+        np.save(band{i}.npy, a['arr_0'][:, :, i])
+        
+    '''#make_masks('Buildings')
     x, y = make_clipped_images('Buildings', save=False)
 
     x = np.asarray(x)
@@ -570,7 +561,7 @@ if __name__ == '__main__':
     model = train_keras_model(np.asarray(x), np.asarray(y))
 
     predicts = model.predict(x[:20])
-    np.save('buildings_predicts.npy', predicts)
+    np.save('buildings_predicts.npy', predicts)'''
     #run_big_model()
     
     # at one point, I ran this to make a 19-channel image for each file
