@@ -499,7 +499,10 @@ def make_clipped_images(mask_type='Buildings', save=True):
             image_array = i
         print(f'image {image_id}: {image_array.shape}')
         
-        image_mask = np.load(f'data/masks/{mask_type}/{mask_type}{image_id}_mask.npy')
+        try:
+            image_mask = np.load(f'data/masks/{mask_type}/{mask_type}{image_id}_mask.npy')
+        except:
+            continue
         print(f'mask {image_id}: {image_mask.shape}')
         print(np.count_nonzero(image_mask))
 
