@@ -458,7 +458,7 @@ def make_masks(target_class='Trees'):
     parent_folder = f'data/masks/{target_class}'
     if not isdir(parent_folder):
         mkdir(parent_folder)
-    
+
     for image_id in image_IDs:
         image_shapes = shapes.loc[(shapes['ImageId'] == image_id) & (shapes['ClassType'] == classes[target_class])]['MultipolygonWKT'].values[0]
 
@@ -475,11 +475,11 @@ def make_masks(target_class='Trees'):
         print(f'mask shape: {mask.shape}')
         print(f'nonzero_values: {np.count_nonzero(mask)}')
 
-        np.save(parent_folder + f'{image_id}_mask.npy', mask)    
+        np.save(parent_folder + f'{image_id}_mask.npy', mask)
     
     return
 
-def make_clipped_images(mask_type='Buildings'):
+def make_clipped_images(mask_type='Buildings', save=True):
     image_IDs = get_image_IDs()
 
     clipped_shapes_folder = f'data/clipped_masks/{mask_type}'
@@ -489,6 +489,9 @@ def make_clipped_images(mask_type='Buildings'):
     clipped_images_folder = f'data/clipped_images/{mask_type}'
     if not isdir(clipped_images_folder):
         mkdir(clipped_images_folder)
+
+    return_masks = []
+    return_images = []
 
     for image_id in image_IDs:
         npz = np.load(f'data/combined_images/{image_id}.npz')
@@ -510,13 +513,19 @@ def make_clipped_images(mask_type='Buildings'):
 
                 clipped_mask = np.expand_dims(clipped_mask, axis=2)
 
+                if save:
                 # save clipped image
-                np.save(f'{clipped_images_folder}/{image_id}_clip_{counter}.npy', clipped_image)
+                    np.save(f'{clipped_images_folder}/{image_id}_clip_{counter}.npy', clipped_image)
 
-                # save clipped mask
-                np.save(f'{clipped_shapes_folder}/{image_id}_mask_{counter}.npy', clipped_mask)
+                    # save clipped mask
+                    np.save(f'{clipped_shapes_folder}/{image_id}_mask_{counter}.npy', clipped_mask)
+                else:
+                    return_images.append(clipped_image)
+                    return_masks.append(clipped_mask)
                 
                 counter += 1
+    
+    return return_images, return_masks
         
 def run_big_model(mask_type='Buildings'):
     x = []
@@ -545,7 +554,9 @@ if __name__ == '__main__':
     image_IDs = get_image_IDs()
 
     #make_masks('Buildings')
-    make_clipped_images('Buildings')
+    x, y = make_clipped_images('Buildings', save=False)
+
+    train_keras_model(np.asarray(x), np.asarray(y))
     #run_big_model()
     
     # at one point, I ran this to make a 19-channel image for each file
