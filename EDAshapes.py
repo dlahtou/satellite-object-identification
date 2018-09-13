@@ -491,7 +491,9 @@ def make_clipped_images(mask_type='Buildings', save=True):
     return_masks = []
     return_images = []
 
+    counter = 0
     for image_id in image_IDs:
+        print(counter)
         npz = np.load(f'data/combined_images/{image_id}.npz')
         image_array = npz['arr_0']
         print(f'image {image_id}: {image_array.shape}')
@@ -503,7 +505,6 @@ def make_clipped_images(mask_type='Buildings', save=True):
         print(f'mask {image_id}: {image_mask.shape}')
         print(np.count_nonzero(image_mask))
 
-        counter = 0
         for i in range(13):
             for j in range(13):
                 if counter > 600:
@@ -555,10 +556,10 @@ def run_big_model(mask_type='Buildings'):
 if __name__ == '__main__':
     
 
-    image_IDs = get_image_IDs()
+    '''image_IDs = get_image_IDs()
 
     for ID in image_IDs:
-        save_multiband_image(ID)
+        save_multiband_image(ID)'''
 
     '''a = np.load('data/combined_images/6040_2_2.npz')
     for i in range(3,19):
