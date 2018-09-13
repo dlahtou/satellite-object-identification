@@ -12,6 +12,7 @@ from keras import backend as K
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.layers import (BatchNormalization, Concatenate, Conv2D,
                           Conv2DTranspose, Dense, Input, MaxPooling2D)
+from keras.layers.core import Dropout
 from keras.layers.merge import concatenate
 from keras.models import Model
 from matplotlib.patches import Polygon
@@ -280,47 +281,56 @@ def train_keras_model(x, y):
     with tf.device('/gpu:0'):
         inputs = Input((256,256,19))
 
-        layer_1 = Conv2D(64, [3, 3], activation='elu', padding='same')(inputs)
-        layer_2 = Conv2D(64, [3, 3], activation='elu', padding='same')(layer_1)
+        layer_1 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(inputs)
+        d1 = Dropout(0.1)(layer_1)
+        layer_2 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d1)
 
         layer_3 = MaxPooling2D(pool_size=(2,2))(layer_2)
 
-        layer_4 = Conv2D(128, [3, 3], activation='elu', padding='same')(layer_3)
-        layer_5 = Conv2D(128, [3, 3], activation='elu', padding='same')(layer_4)
+        layer_4 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_3)
+        d2 = Dropout(0.1)(layer_4)
+        layer_5 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d2)
 
         layer_6 = MaxPooling2D(pool_size=(2,2))(layer_5)
 
-        layer_7 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_6)
-        layer_8 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_7)
+        layer_7 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_6)
+        d3 = Dropout(0.1)(layer_7)
+        layer_8 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d3)
 
         layer_9 = MaxPooling2D(pool_size=(2,2))(layer_8)
 
-        layer_10 = Conv2D(512, [3, 3], activation='elu', padding='same')(layer_9)
-        layer_11 = Conv2D(512, [3, 3], activation='elu', padding='same')(layer_10)
+        layer_10 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_9)
+        d4 = Dropout(0.1)(layer_10)
+        layer_11 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d4)
 
         final_depth = MaxPooling2D(pool_size=(2,2))(layer_11)
-        final_conv = Conv2D(1024, [3,3], activation='elu', padding='same')(final_depth)
-        final_conv2 = Conv2D(1024, [3,3], activation='elu', padding='same')(final_conv)
+        final_conv = Conv2D(1024, [3,3], activation='elu', kernel_initializer='he_normal', padding='same')(final_depth)
+        d5 = Dropout(0.1)(final_conv)
+        final_conv2 = Conv2D(1024, [3,3], activation='elu', kernel_initializer='he_normal', padding='same')(d5)
 
-        final_upconv = Conv2DTranspose(512, (2,2), strides=(2,2), padding='same')(final_conv2)
+        final_upconv = Conv2DTranspose(512, (2,2), strides=(2,2) padding='same')(final_conv2)
         final_con = concatenate([layer_10, final_upconv])
-        final_re = Conv2D(512, [3, 3], activation='elu', padding='same')(final_con)
-        final_re2 = Conv2D(512, [3, 3], activation='elu', padding='same')(final_re)
+        final_re = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(final_con)
+        d6 = Dropout(0.1)(final_re)
+        final_re2 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d6)
 
         layer_12 = Conv2DTranspose(256, (2,2), strides=(2,2), padding='same')(final_re2)
         layer_13 = concatenate([layer_7, layer_12])
-        layer_14 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_13)
-        layer_15 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_14)
+        layer_14 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_13)
+        d7 = Dropout(0.1)(layer_14)
+        layer_15 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d7)
         
         layer_16 = Conv2DTranspose(128, (2,2), strides=(2,2), padding='same')(layer_15)
         layer_17 = concatenate([layer_4, layer_16])
-        layer_18 = Conv2D(128, [3, 3], activation='elu', padding='same')(layer_17)
-        layer_19 = Conv2D(128, [3, 3], activation='elu', padding='same')(layer_18)
+        layer_18 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_17)
+        d8 = Dropout(0.1)(layer_18)
+        layer_19 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d8)
 
         layer_20 = Conv2DTranspose(64, (2,2), strides=(2,2), padding='same')(layer_19)
         layer_21 = concatenate([layer_1, layer_20])
-        layer_22 = Conv2D(64, [3, 3], activation='elu', padding='same')(layer_21)
-        layer_23 = Conv2D(64, [3, 3], activation='elu', padding='same')(layer_22)
+        layer_22 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_21)
+        d9 = Dropout(0.1)(layer_22)
+        layer_23 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d9)
 
         outputs = Conv2D(1, (1,1), activation='sigmoid')(layer_23)
 
@@ -389,7 +399,7 @@ def save_multiband_image(image_id):
     target_shape = images['RGB'].shape
 
 
-    # calculate warp matrix
+    '''# calculate warp matrix
     warps = dict()
     for key, image in images.items():
         if key == 'RGB' or key == 'P':
@@ -403,13 +413,14 @@ def save_multiband_image(image_id):
         warped_images[key] = cv2.warpAffine(images[key], warp,
                                             (target_shape[1], target_shape[0]),
                                             flags= cv2.INTER_LINEAR,
-                                            borderMode = cv2.BORDER_REPLICATE)
+                                            borderMode = cv2.BORDER_REPLICATE)'''
     
     # concatenate images
     out_image = rescale_image_values(images['RGB'])
-    for image in warped_images.values():
+    for image in images.values():
         #res_image = rescale_image_values(image)
-        out_image = np.concatenate((out_image, image), axis=2)
+        resized_image = cv2.resize(image, (target_shape[1], target_shape[0]))
+        out_image = np.concatenate((out_image, resized_image), axis=2)
     
     parent_folder = 'data/combined_images'
     if not isdir(parent_folder):
