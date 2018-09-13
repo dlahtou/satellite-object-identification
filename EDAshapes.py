@@ -349,7 +349,7 @@ def train_keras_model(x, y):
 
         stale = EarlyStopping(monitor='loss', patience=3, verbose=1)
 
-        checkpoint_model = ModelCheckpoint('my_model.h5', verbose=1, save_best_only=True)
+        checkpoint_model = ModelCheckpoint('buildings_model.h5', verbose=1, save_best_only=True)
 
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
         model.fit(x=x, y=y, epochs=4, callbacks=[stale, checkpoint_model], batch_size=16)
@@ -561,7 +561,16 @@ if __name__ == '__main__':
     #make_masks('Buildings')
     x, y = make_clipped_images('Buildings', save=False)
 
-    train_keras_model(np.asarray(x), np.asarray(y))
+    x = np.asarray(x)
+    y = np.asarray(y)
+
+    np.save('buildings_images.npy', x[:20])
+    np.save('buildings_masks.npy', y[:20])
+
+    model = train_keras_model(np.asarray(x), np.asarray(y))
+
+    predicts = model.predict(x[:20])
+    np.save('buildings_predicts.npy', predicts)
     #run_big_model()
     
     # at one point, I ran this to make a 19-channel image for each file
