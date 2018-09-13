@@ -279,7 +279,7 @@ def jaccard(img1, img2):
 
 def train_keras_model(x, y):
     with tf.device('/gpu:0'):
-        inputs = Input((256,256,19))
+        inputs = Input((256,256,20))
 
         layer_1 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(inputs)
         d1 = Dropout(0.1)(layer_1)
@@ -493,8 +493,7 @@ def make_clipped_images(mask_type='Buildings', save=True):
 
     for image_id in image_IDs:
         npz = np.load(f'data/combined_images/{image_id}.npz')
-        for i in npz.values():
-            image_array = i
+        image_array = npz['arr_0']
         print(f'image {image_id}: {image_array.shape}')
         
         try:
