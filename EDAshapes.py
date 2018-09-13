@@ -492,8 +492,7 @@ def make_clipped_images(mask_type='Buildings', save=True):
     return_images = []
 
     for image_id in image_IDs:
-        with open(f'data/combined_images/{image_id}.npz', 'rb') as open_file:
-            npz = np.load(open_file)
+        npz = np.load(f'data/combined_images/{image_id}.npz')
         image_array = npz['arr_0']
         print(f'image {image_id}: {image_array.shape}')
         
@@ -558,8 +557,8 @@ if __name__ == '__main__':
 
     image_IDs = get_image_IDs()
 
-    #for ID in image_IDs:
-    #    save_multiband_image(ID)
+    for ID in image_IDs:
+        save_multiband_image(ID)
 
     '''a = np.load('data/combined_images/6040_2_2.npz')
     for i in range(3,19):
