@@ -338,12 +338,12 @@ def train_keras_model(x, y):
 
         stale = EarlyStopping(monitor='loss', patience=3, verbose=1)
 
-        checkpoint_model = ModelCheckpoint('buildings_model.h5', verbose=1, save_best_only=True)
+        checkpoint_model = ModelCheckpoint('trees_model.h5', verbose=1, save_best_only=True)
 
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
-        model.fit(x=x, y=y, epochs=4, callbacks=[stale, checkpoint_model], batch_size=16)
+        model.fit(x=x, y=y, epochs=4, callbacks=[stale, checkpoint_model], batch_size=32)
 
-        model.save('buildings_model.h5')
+        model.save('trees_model.h5')
 
     return model
 
@@ -494,6 +494,10 @@ def make_clipped_images(mask_type='Buildings', save=True):
     counter = 0
     for image_id in image_IDs:
         print(counter)
+
+        if counter > 600:
+            break
+
         npz = np.load(f'data/combined_images/{image_id}.npz')
         image_array = npz['arr_0']
         print(f'image {image_id}: {image_array.shape}')
@@ -507,8 +511,6 @@ def make_clipped_images(mask_type='Buildings', save=True):
 
         for i in range(13):
             for j in range(13):
-                if counter > 600:
-                    break
                 clipped_image = image_array[i*256:(i+1)*256, j*256:(j+1)*256, :]
                 clipped_mask = image_mask[i*256:(i+1)*256, j*256:(j+1)*256]
                 if np.count_nonzero(clipped_mask) == 0:
