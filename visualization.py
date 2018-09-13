@@ -111,7 +111,7 @@ ds_array = rescale_image_values(ds_array)
 
 mask = np.load('data/masks/Trees/6040_2_2_mask.npy')
 
-fig = plt.figure()
+fig = plt.figure(figsize=[15,15])
 plt.imshow(ds_array)
 plt.imshow(mask, cmap='Reds', alpha=0.5)
 
