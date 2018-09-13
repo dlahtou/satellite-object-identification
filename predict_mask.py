@@ -24,7 +24,7 @@ def predict_mask():
     print(a.shape)
     model = load_model('my_model.h5', custom_objects={'mean_iou': mean_iou})
     
-    k = model.predict(np.asarray([a]))
+    k = model.predict(np.asarray([b]))
     rak = k[0]
 
     np.save('6040_2_2_pred_157.npy', rak)
