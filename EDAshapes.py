@@ -492,7 +492,8 @@ def make_clipped_images(mask_type='Buildings', save=True):
     return_images = []
 
     for image_id in image_IDs:
-        npz = np.load(f'data/combined_images/{image_id}.npz')
+        with open(f'data/combined_images/{image_id}.npz', 'rb') as open_file:
+            npz = np.load(open_file)
         image_array = npz['arr_0']
         print(f'image {image_id}: {image_array.shape}')
         
