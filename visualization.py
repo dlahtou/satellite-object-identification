@@ -113,7 +113,7 @@ mask = np.load('data/masks/Trees/6040_2_2_mask.npy')
 
 fig = plt.figure(figsize=[15,15])
 plt.imshow(ds_array)
-plt.imshow(mask, cmap='Reds', alpha=0.5)
+plt.imshow(mask, cmap='Greens', alpha=0.5)
 
 plt.axis('off')
 fig.savefig('full_sat_image_with_mask.png', transparent=True)
