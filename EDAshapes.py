@@ -539,7 +539,7 @@ if __name__ == '__main__':
 
     image_IDs = get_image_IDs()
 
-    for ID in image_IDs():
+    for ID in image_IDs:
         save_multiband_image(ID)
 
     a = np.load('data/combined_images/6040_2_2.npz')
