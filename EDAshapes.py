@@ -109,9 +109,6 @@ def mean_iou(y_true, y_pred):
         prec.append(score)
     return K.mean(K.stack(prec), axis=0)
 
-def jaccard_ce_loss(y_true, y_pred):
-    
-
 
 def make_vertices_lists(polygons, x_range, y_range, size=[256, 256]):
     if not polygons:
@@ -548,7 +545,7 @@ if __name__ == '__main__':
     a = np.load('data/combined_images/6040_2_2.npz')
     for i in range(3,19):
         np.save(band{i}.npy, a['arr_0'][:, :, i])
-        
+
     '''#make_masks('Buildings')
     x, y = make_clipped_images('Buildings', save=False)
 
