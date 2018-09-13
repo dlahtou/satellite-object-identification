@@ -418,7 +418,7 @@ def save_multiband_image(image_id):
     # concatenate images
     out_image = rescale_image_values(images['RGB'])
     print(target_shape)
-    for key, image in images.values():
+    for key, image in images.items():
         #res_image = rescale_image_values(image)
         if key == 'RGB':
             continue
