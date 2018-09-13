@@ -17,7 +17,7 @@ def mean_iou(y_true, y_pred):
         prec.append(score)
     return K.mean(K.stack(prec), axis=0)
 
-def predict_mask()
+def predict_mask():
     a = np.load('data/clipped_masks/6040_2_2_mask_157.npy')
     b = np.load('data/clipped_images/6040_2_2_clip_157.npy')
 
