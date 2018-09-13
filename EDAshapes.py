@@ -422,6 +422,8 @@ def save_multiband_image(image_id):
         resized_image = cv2.resize(image, (target_shape[1], target_shape[0]))
         print(target_shape)
         print(resized_image.shape)
+        if len(resized_image.shape) == 2:
+            resized_image = np.expand_dims(resized_image, axis=2)
         out_image = np.concatenate((out_image, resized_image), axis=2)
     
     parent_folder = 'data/combined_images'
