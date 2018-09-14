@@ -342,7 +342,7 @@ def train_keras_model(x, y):
 
         
 
-        adam = Adam(lr=0.0000001)
+        adam = Adam(lr=0.0001)
 
         model.compile(optimizer=adam, loss='binary_crossentropy', metrics=[mean_iou])
 
