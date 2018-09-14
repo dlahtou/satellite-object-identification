@@ -288,58 +288,58 @@ def train_keras_model(x, y):
     with tf.device('/gpu:0'):
         inputs = Input((256,256,20))
 
-        layer_1 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(inputs)
-        layer_2 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_1)
+        layer_1 = Conv2D(64, [3, 3], activation='elu', padding='same')(inputs)
+        layer_2 = Conv2D(64, [3, 3], activation='elu', padding='same')(layer_1)
 
         layer_3 = MaxPooling2D(pool_size=(2,2))(layer_2)
 
-        layer_4 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_3)
-        layer_5 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_4)
+        layer_4 = Conv2D(128, [3, 3], activation='elu', padding='same')(layer_3)
+        layer_5 = Conv2D(128, [3, 3], activation='elu', padding='same')(layer_4)
 
         layer_6 = MaxPooling2D(pool_size=(2,2))(layer_5)
 
-        layer_7 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_6)
-        layer_8 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_7)
+        layer_7 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_6)
+        layer_8 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_7)
 
         layer_9 = MaxPooling2D(pool_size=(2,2))(layer_8)
 
-        layer_10 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_9)
-        layer_11 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_10)
+        layer_10 = Conv2D(512, [3, 3], activation='elu', padding='same')(layer_9)
+        layer_11 = Conv2D(512, [3, 3], activation='elu', padding='same')(layer_10)
 
         final_depth = MaxPooling2D(pool_size=(2,2))(layer_11)
-        final_conv = Conv2D(1024, [3,3], activation='elu', kernel_initializer='he_normal', padding='same')(final_depth)
-        final_conv2 = Conv2D(1024, [3,3], activation='elu', kernel_initializer='he_normal', padding='same')(final_conv)
+        final_conv = Conv2D(1024, [3,3], activation='elu', padding='same')(final_depth)
+        final_conv2 = Conv2D(1024, [3,3], activation='elu', padding='same')(final_conv)
 
         final_upconv = Conv2DTranspose(512, (2,2), strides=(2,2), padding='same')(final_conv2)
         final_con = concatenate([layer_10, final_upconv])
-        final_re = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(final_con)
-        final_re2 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(final_re)
+        final_re = Conv2D(512, [3, 3], activation='elu', padding='same')(final_con)
+        final_re2 = Conv2D(512, [3, 3], activation='elu', padding='same')(final_re)
 
         layer_12 = Conv2DTranspose(256, (2,2), strides=(2,2), padding='same')(final_re2)
         layer_13 = concatenate([layer_7, layer_12])
-        layer_14 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_13)
-        layer_15 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_14)
+        layer_14 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_13)
+        layer_15 = Conv2D(256, [3, 3], activation='elu', padding='same')(layer_14)
         
         layer_16 = Conv2DTranspose(128, (2,2), strides=(2,2), padding='same')(layer_15)
         layer_17 = concatenate([layer_4, layer_16])
-        layer_18 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_17)
-        layer_19 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_18)
+        layer_18 = Conv2D(128, [3, 3], activation='elu', padding='same')(layer_17)
+        layer_19 = Conv2D(128, [3, 3], activation='elu', padding='same')(layer_18)
 
         layer_20 = Conv2DTranspose(64, (2,2), strides=(2,2), padding='same')(layer_19)
         layer_21 = concatenate([layer_1, layer_20])
-        layer_22 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_21)
-        layer_23 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_22)
+        layer_22 = Conv2D(64, [3, 3], activation='elu', padding='same')(layer_21)
+        layer_23 = Conv2D(64, [3, 3], activation='elu', padding='same')(layer_22)
 
         outputs = Conv2D(1, (1,1), activation='sigmoid')(layer_23)
 
         model = Model(inputs=[inputs], outputs=[outputs])
 
-        stale = EarlyStopping(monitor='loss', patience=3, verbose=1)
+        stale = EarlyStopping(patience=3, verbose=1)
 
         checkpoint_model = ModelCheckpoint('trees_model.h5', verbose=1, save_best_only=True)
 
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
-        model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=32)
+        model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
 
         model.save('trees_model.h5')
 
@@ -475,7 +475,7 @@ def make_masks(target_class='Trees'):
     
     return
 
-def make_clipped_images(mask_type='Buildings', save=True):
+def make_clipped_images(mask_type='Buildings', save=True, number=600):
     image_IDs = get_image_IDs()
 
     clipped_shapes_folder = f'data/clipped_masks/{mask_type}'
@@ -493,7 +493,7 @@ def make_clipped_images(mask_type='Buildings', save=True):
     for image_id in image_IDs:
         print(counter)
 
-        if counter > 600:
+        if counter > number:
             break
 
         npz = np.load(f'data/combined_images/{image_id}.npz')
@@ -567,7 +567,7 @@ if __name__ == '__main__':
 
     #make_masks('Buildings')
 
-    x, y = make_clipped_images('Trees', save=False)
+    x, y = make_clipped_images('Trees', save=False, number=40)
 
     x = np.asarray(x)
     y = np.asarray(y)
