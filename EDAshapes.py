@@ -581,8 +581,8 @@ if __name__ == '__main__':
 
     x = x[:, :, :, :3]
 
-    pkl.dump('trees_images.pkl', x[:number].astype(np.float32))
-    pkl.dump('trees_masks.pkl', y[:number].astype(np.float32))
+    pkl.dump(open('trees_images.pkl', 'wb'), x[:number].astype(np.float32))
+    pkl.dump(open('trees_masks.pkl', 'wb'), y[:number].astype(np.float32))
 
     if predict:
         model = train_keras_model(np.asarray(x), np.asarray(y))
