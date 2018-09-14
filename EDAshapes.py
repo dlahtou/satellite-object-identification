@@ -576,7 +576,7 @@ if __name__ == '__main__':
 
     #make_masks('Buildings')
 
-    model = load_model('trees_model.h5', custom_objects={'mean_iou': mean})
+    model = load_model('trees_model.h5', custom_objects={'mean_iou': mean_iou})
     x = np.load('trees_images.npy')
 
     predicts = model.predict(x)
