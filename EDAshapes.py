@@ -533,6 +533,15 @@ def make_clipped_images(mask_type='Buildings', save=True, number=600, sq_dims=25
                 counter += 1
     
     return return_images[:number], return_masks[:number]
+
+# stupid example where i make the "satellite images" as binary masks of green regions
+def make_clipped_images_green_masks(mask_type="Trees", number):
+    x, y = make_clipped_images(mask_type=mask_type, number=number, save=False)
+
+    x = np.concatenate((np.zeros(y.shape), y, np.zeros(y.shape)), axis=3)
+
+    return x, y
+
         
 def run_big_model(mask_type='Buildings'):
     x = []
@@ -571,24 +580,21 @@ if __name__ == '__main__':
 
     #make_masks('Buildings')
 
-    number = 400
-    predict = False
+    number = 40
+    predict = True
 
-    x, y = make_clipped_images('Trees', save=False, number=number, sq_dims=128)
+    x, y = make_clipped_images_green_masks(number=40)
 
     x = np.asarray(x).astype(np.float32)
-    y = np.asarray(y).astype(np.float32)
-
-    x = x[:, :, :, :3]
-
-    pkl.dump(x[:number].astype(np.float32), open('trees_images.pkl', 'wb'))
-    pkl.dump(y[:number].astype(np.float32), open('trees_masks.pkl', 'wb'))
+    y = np.asarray(y).astype(bool)
 
     if predict:
         model = train_keras_model(np.asarray(x), np.asarray(y))
 
         predicts = model.predict(x[:number])
         np.save('trees_predicts.npy', predicts)
+
+        print(predicts)
     
     # at one point, I ran this to make a 19-channel image for each file
     #for ID in image_IDs:
