@@ -538,6 +538,8 @@ def make_clipped_images(mask_type='Buildings', save=True, number=600, sq_dims=25
 def make_clipped_images_green_masks(mask_type="Trees", number=40):
     x, y = make_clipped_images(mask_type=mask_type, number=number, save=False)
 
+    y = np.asarray(y)
+
     x = np.concatenate((np.zeros(y.shape), y, np.zeros(y.shape)), axis=3)
 
     return x, y
