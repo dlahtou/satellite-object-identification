@@ -579,7 +579,7 @@ if __name__ == '__main__':
     x = np.asarray(x).astype(np.float32)
     y = np.asarray(y).astype(np.float32)
 
-    x = np[:, :, :, :3]
+    x = x[:, :, :, :3]
 
     pkl.dump('trees_images.pkl', x[:number].astype(np.float32))
     pkl.dump('trees_masks.pkl', y[:number].astype(np.float32))
