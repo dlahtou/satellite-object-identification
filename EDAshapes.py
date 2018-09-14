@@ -289,55 +289,46 @@ def train_keras_model(x, y):
         inputs = Input((256,256,20))
 
         layer_1 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(inputs)
-        d1 = Dropout(0.1)(layer_1)
-        layer_2 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d1)
+        layer_2 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_1)
 
         layer_3 = MaxPooling2D(pool_size=(2,2))(layer_2)
 
         layer_4 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_3)
-        d2 = Dropout(0.1)(layer_4)
-        layer_5 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d2)
+        layer_5 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_4)
 
         layer_6 = MaxPooling2D(pool_size=(2,2))(layer_5)
 
         layer_7 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_6)
-        d3 = Dropout(0.1)(layer_7)
-        layer_8 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d3)
+        layer_8 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_7)
 
         layer_9 = MaxPooling2D(pool_size=(2,2))(layer_8)
 
         layer_10 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_9)
-        d4 = Dropout(0.1)(layer_10)
-        layer_11 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d4)
+        layer_11 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_10)
 
         final_depth = MaxPooling2D(pool_size=(2,2))(layer_11)
         final_conv = Conv2D(1024, [3,3], activation='elu', kernel_initializer='he_normal', padding='same')(final_depth)
-        d5 = Dropout(0.1)(final_conv)
-        final_conv2 = Conv2D(1024, [3,3], activation='elu', kernel_initializer='he_normal', padding='same')(d5)
+        final_conv2 = Conv2D(1024, [3,3], activation='elu', kernel_initializer='he_normal', padding='same')(final_conv)
 
         final_upconv = Conv2DTranspose(512, (2,2), strides=(2,2), padding='same')(final_conv2)
         final_con = concatenate([layer_10, final_upconv])
         final_re = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(final_con)
-        d6 = Dropout(0.1)(final_re)
-        final_re2 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d6)
+        final_re2 = Conv2D(512, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(final_re)
 
         layer_12 = Conv2DTranspose(256, (2,2), strides=(2,2), padding='same')(final_re2)
         layer_13 = concatenate([layer_7, layer_12])
         layer_14 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_13)
-        d7 = Dropout(0.1)(layer_14)
-        layer_15 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d7)
+        layer_15 = Conv2D(256, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_14)
         
         layer_16 = Conv2DTranspose(128, (2,2), strides=(2,2), padding='same')(layer_15)
         layer_17 = concatenate([layer_4, layer_16])
         layer_18 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_17)
-        d8 = Dropout(0.1)(layer_18)
-        layer_19 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d8)
+        layer_19 = Conv2D(128, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_18)
 
         layer_20 = Conv2DTranspose(64, (2,2), strides=(2,2), padding='same')(layer_19)
         layer_21 = concatenate([layer_1, layer_20])
         layer_22 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_21)
-        d9 = Dropout(0.1)(layer_22)
-        layer_23 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(d9)
+        layer_23 = Conv2D(64, [3, 3], activation='elu', kernel_initializer='he_normal', padding='same')(layer_22)
 
         outputs = Conv2D(1, (1,1), activation='sigmoid')(layer_23)
 
@@ -348,7 +339,7 @@ def train_keras_model(x, y):
         checkpoint_model = ModelCheckpoint('trees_model.h5', verbose=1, save_best_only=True)
 
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
-        model.fit(x=x, y=y, epochs=4, callbacks=[stale, checkpoint_model], batch_size=32)
+        model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=32)
 
         model.save('trees_model.h5')
 
@@ -576,17 +567,12 @@ if __name__ == '__main__':
 
     #make_masks('Buildings')
 
-    model = load_model('trees_model.h5', custom_objects={'mean_iou': mean_iou})
-    x = np.load('trees_images.npy')
-
-    predicts = model.predict(x)
-
-    np.save('trees_predicts.npy', predicts)
-
-    '''x, y = make_clipped_images('Trees', save=False)
+    x, y = make_clipped_images('Trees', save=False)
 
     x = np.asarray(x)
     y = np.asarray(y)
+
+    print(x.shape)
 
     np.save('trees_images.npy', x[:20])
     np.save('trees_masks.npy', y[:20])
@@ -594,7 +580,7 @@ if __name__ == '__main__':
     model = train_keras_model(np.asarray(x), np.asarray(y))
 
     predicts = model.predict(x[:20])
-    np.save('trees_predicts.npy', predicts)'''
+    np.save('trees_predicts.npy', predicts)
     
     # at one point, I ran this to make a 19-channel image for each file
     #for ID in image_IDs:
