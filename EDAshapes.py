@@ -339,15 +339,15 @@ def train_keras_model(x, y):
 
         
 
-        adam = Adam(lr=0.0001)
+        #adam = Adam(lr=0.01)
 
-        model.compile(optimizer=adam, loss='binary_crossentropy', metrics=[mean_iou])
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
 
-        results = model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
+        model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
 
         model.save('trees_model.h5')
 
-    return results
+    return model
 
 def rescale_image_values(img):
     shape1 = img.shape
@@ -479,7 +479,7 @@ def make_masks(target_class='Trees'):
     
     return
 
-def make_clipped_images(mask_type='Buildings', save=True, number=600):
+def make_clipped_images(mask_type='Buildings', save=True, number=600, sq_dims=256, package=None):
     image_IDs = get_image_IDs()
 
     clipped_shapes_folder = f'data/clipped_masks/{mask_type}'
@@ -513,8 +513,8 @@ def make_clipped_images(mask_type='Buildings', save=True, number=600):
 
         for i in range(13):
             for j in range(13):
-                clipped_image = image_array[i*256:(i+1)*256, j*256:(j+1)*256, :]
-                clipped_mask = image_mask[i*256:(i+1)*256, j*256:(j+1)*256]
+                clipped_image = image_array[i*sq_dims:(i+1)*sq_dims, j*sq_dims:(j+1)*sq_dims, :]
+                clipped_mask = image_mask[i*sq_dims:(i+1)*sq_dims, j*sq_dims:(j+1)*sq_dims]
                 if np.count_nonzero(clipped_mask) == 0:
                     continue
 
@@ -571,18 +571,24 @@ if __name__ == '__main__':
 
     #make_masks('Buildings')
 
-    x, y = make_clipped_images('Trees', save=False, number=40)
+    number = 400
+    predict = False
+
+    x, y = make_clipped_images('Trees', save=False, number=number, sq_dims=128)
 
     x = np.asarray(x).astype(np.float32)
     y = np.asarray(y).astype(np.float32)
 
-    np.save('trees_images.npy', x[:20])
-    np.save('trees_masks.npy', y[:20])
+    x = np[:, :, :, :3]
 
-    model = train_keras_model(np.asarray(x), np.asarray(y))
+    pkl.dump('trees_images.pkl', x[:number].astype(np.float32))
+    pkl.dump('trees_masks.pkl', y[:number].astype(np.float32))
 
-    predicts = model.predict(x[:20])
-    np.save('trees_predicts.npy', predicts)
+    if predict:
+        model = train_keras_model(np.asarray(x), np.asarray(y))
+
+        predicts = model.predict(x[:number])
+        np.save('trees_predicts.npy', predicts)
     
     # at one point, I ran this to make a 19-channel image for each file
     #for ID in image_IDs:
