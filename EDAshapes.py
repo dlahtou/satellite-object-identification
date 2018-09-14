@@ -349,7 +349,7 @@ def train_keras_model(x, y):
         datagen = ImageDataGenerator(samplewise_center=True, samplewise_std_normalization=True)
         datagen.fit(x)
 
-        model.fit_generator(datagen.flow(x, y), batch_size=4, epochs=8)
+        model.fit_generator(datagen.flow(x, y, batch_size=4), steps_per_epoch=len(x)/32, epochs=8)
 
         #model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
 
