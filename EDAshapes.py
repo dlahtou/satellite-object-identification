@@ -528,7 +528,7 @@ def make_clipped_images(mask_type='Buildings', save=True, number=600):
                 
                 counter += 1
     
-    return return_images, return_masks
+    return return_images[:number], return_masks[:number]
         
 def run_big_model(mask_type='Buildings'):
     x = []
