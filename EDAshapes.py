@@ -294,17 +294,14 @@ def train_keras_model(x, y):
         layer_2 = Conv2D(64, [3, 3], activation='relu', padding='same')(layer_1)
 
         layer_3 = MaxPooling2D(pool_size=(2,2))(layer_2)
-
         layer_4 = Conv2D(128, [3, 3], activation='relu', padding='same')(layer_3)
         layer_5 = Conv2D(128, [3, 3], activation='relu', padding='same')(layer_4)
 
         layer_6 = MaxPooling2D(pool_size=(2,2))(layer_5)
-
         layer_7 = Conv2D(256, [3, 3], activation='relu', padding='same')(layer_6)
         layer_8 = Conv2D(256, [3, 3], activation='relu', padding='same')(layer_7)
 
         layer_9 = MaxPooling2D(pool_size=(2,2))(layer_8)
-
         layer_10 = Conv2D(512, [3, 3], activation='relu', padding='same')(layer_9)
         layer_11 = Conv2D(512, [3, 3], activation='relu', padding='same')(layer_10)
 
@@ -346,11 +343,11 @@ def train_keras_model(x, y):
 
         model.compile(optimizer=adam, loss='binary_crossentropy', metrics=[mean_iou])
 
-        model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
+        results = model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
 
         model.save('trees_model.h5')
 
-    return model
+    return results
 
 def rescale_image_values(img):
     shape1 = img.shape
