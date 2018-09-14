@@ -14,7 +14,7 @@ from keras.layers import (BatchNormalization, Concatenate, Conv2D,
                           Conv2DTranspose, Dense, Input, MaxPooling2D)
 from keras.layers.core import Dropout
 from keras.layers.merge import concatenate
-from keras.models import Model
+from keras.models import Model, load_model
 from matplotlib.patches import Polygon
 from osgeo import gdal, ogr
 from osgeo.gdalconst import GA_ReadOnly
@@ -110,6 +110,13 @@ def mean_iou(y_true, y_pred):
         prec.append(score)
     return K.mean(K.stack(prec), axis=0)
 
+def combined_dice_ce(y_true, y_pred):
+    smooth = 1
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    dice_loss = - (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth) 
+    return dice_loss + binary_crossentropy(y_pred, y_true)
 
 def make_vertices_lists(polygons, x_range, y_range, size=[256, 256]):
     if not polygons:
@@ -568,7 +575,14 @@ if __name__ == '__main__':
         np.save(f'band{i}.npy', a['arr_0'][:, :, i])'''
 
     #make_masks('Buildings')
-    x, y = make_clipped_images('Trees', save=False)
+    model = load_model('trees_model.h5')
+    x = np.load('trees_images.npy')
+
+    predicts = model.predict(x)
+
+    np.save('trees_predicts.npy', predicts)
+
+    '''x, y = make_clipped_images('Trees', save=False)
 
     x = np.asarray(x)
     y = np.asarray(y)
@@ -579,7 +593,7 @@ if __name__ == '__main__':
     model = train_keras_model(np.asarray(x), np.asarray(y))
 
     predicts = model.predict(x[:20])
-    np.save('trees_predicts.npy', predicts)
+    np.save('trees_predicts.npy', predicts)'''
     
     # at one point, I ran this to make a 19-channel image for each file
     #for ID in image_IDs:
