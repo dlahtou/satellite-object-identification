@@ -286,9 +286,9 @@ def jaccard(img1, img2):
     return 1 - (intersection / union)    
 
 
-def train_keras_model(x, y):
+def train_keras_model(x, y, n_dims=20):
     with tf.device('/gpu:0'):
-        inputs = Input((256,256,20))
+        inputs = Input((256,256,n_dims))
 
         layer_1 = Conv2D(64, [3, 3], activation='relu', padding='same')(inputs)
         layer_2 = Conv2D(64, [3, 3], activation='relu', padding='same')(layer_1)
@@ -591,7 +591,7 @@ if __name__ == '__main__':
     y = np.asarray(y).astype(bool)
 
     if predict:
-        model = train_keras_model(np.asarray(x), np.asarray(y))
+        model = train_keras_model(np.asarray(x), np.asarray(y), n_dims=3)
 
         predicts = model.predict(x[:number])
         np.save('trees_predicts.npy', predicts)
