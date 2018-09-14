@@ -346,12 +346,7 @@ def train_keras_model(x, y):
 
         model.compile(optimizer=adam, loss='binary_crossentropy', metrics=[mean_iou])
 
-        datagen = ImageDataGenerator(samplewise_center=True, samplewise_std_normalization=True)
-        datagen.fit(x)
-
-        model.fit_generator(datagen.flow(x, y, batch_size=4), steps_per_epoch=len(x)/32, epochs=8)
-
-        #model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
+        model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
 
         model.save('trees_model.h5')
 
@@ -581,8 +576,8 @@ if __name__ == '__main__':
 
     x, y = make_clipped_images('Trees', save=False, number=40)
 
-    x = np.asarray(x)
-    y = np.asarray(y)
+    x = np.asarray(x).astype(np.float32)
+    y = np.asarray(y).astype(np.float32)
 
     np.save('trees_images.npy', x[:20])
     np.save('trees_masks.npy', y[:20])
