@@ -535,7 +535,7 @@ def make_clipped_images(mask_type='Buildings', save=True, number=600, sq_dims=25
     return return_images[:number], return_masks[:number]
 
 # stupid example where i make the "satellite images" as binary masks of green regions
-def make_clipped_images_green_masks(mask_type="Trees", number):
+def make_clipped_images_green_masks(mask_type="Trees", number=40):
     x, y = make_clipped_images(mask_type=mask_type, number=number, save=False)
 
     x = np.concatenate((np.zeros(y.shape), y, np.zeros(y.shape)), axis=3)
