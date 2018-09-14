@@ -330,7 +330,7 @@ def train_keras_model(x, y):
         layer_22 = Conv2D(64, [3, 3], activation='relu', padding='same')(layer_21)
         layer_23 = Conv2D(64, [3, 3], activation='relu', padding='same')(layer_22)
 
-        outputs = Conv2D(1, (1,1), activation='sigmoid')(layer_23)
+        outputs = Conv2D(1, (1,1), activation='hard_sigmoid')(layer_23)
 
         model = Model(inputs=[inputs], outputs=[outputs])
 
