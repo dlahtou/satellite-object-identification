@@ -20,6 +20,7 @@ from osgeo import gdal, ogr
 from osgeo.gdalconst import GA_ReadOnly
 from shapely.wkt import loads
 from keras.losses import binary_crossentropy
+from keras.optimizers import Adam
 
 with open('data/grid_sizes.csv', 'r') as open_file:
     grids = pd.read_csv(open_file)
@@ -338,7 +339,9 @@ def train_keras_model(x, y):
 
         checkpoint_model = ModelCheckpoint('trees_model.h5', verbose=1, save_best_only=True)
 
-        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
+        adam = Adam(lr=0.0000001)
+
+        model.compile(optimizer=adam, loss='binary_crossentropy', metrics=[mean_iou])
         model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
 
         model.save('trees_model.h5')
