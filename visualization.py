@@ -80,12 +80,12 @@ def show_side_by_side2(pred='6040_2_2_pred_157.npy', mask='/home/dlahtou/6040_2_
 
 #show_side_by_side2()
 
-preds = np.load('/home/dlahtou/trees_predicts.npy')
+'''preds = np.load('/home/dlahtou/trees_predicts.npy')
 masks = np.load('/home/dlahtou/trees_predicts.npy')
 clips = np.load('trees_images.npy')
 
 for i in range(20):
-    show_side_by_side2(preds[i], masks[i], clips[i])
+    show_side_by_side2(preds[i], masks[i], clips[i])'''
 
 
 def rescale_image_values(img):
