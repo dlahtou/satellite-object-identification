@@ -287,7 +287,7 @@ def jaccard(img1, img2):
     return 1 - (intersection / union)    
 
 
-def train_keras_model(x, y, n_channels=20):
+def train_keras_model(x, y, n_channels=20, save_filepath='unnamed_model.h5'):
     with tf.device('/gpu:0'):
         inputs = Input((256,256,n_channels))
 
@@ -336,9 +336,7 @@ def train_keras_model(x, y, n_channels=20):
 
         stale = EarlyStopping(patience=3, verbose=1)
 
-        checkpoint_model = ModelCheckpoint('trees_model.h5', verbose=1, save_best_only=True)
-
-        
+        checkpoint_model = ModelCheckpoint(save_filepath, verbose=1, save_best_only=True)        
 
         #adam = Adam(lr=0.01)
 
@@ -346,7 +344,7 @@ def train_keras_model(x, y, n_channels=20):
 
         model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
 
-        model.save('trees_model.h5')
+        model.save(save_filepath)
 
     return model
 
@@ -460,14 +458,19 @@ def make_masks(target_class='Trees'):
     if not isdir(parent_folder):
         mkdir(parent_folder)
 
+
     for image_id in image_IDs:
         image_shapes = shapes.loc[(shapes['ImageId'] == image_id) & (shapes['ClassType'] == classes[target_class])]['MultipolygonWKT'].values[0]
+
+        npz = np.load(f'data/combined_images/{image_id}.npz')
+        image_array = npz['arr_0']
+        out_shape = image_array.shape
 
         xmax = grids.loc[image_id, 'Xmax']
         ymin = grids.loc[image_id, 'Ymin']
 
-        perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, xmax], [ymin, 0], size=[3349, 3391])
-        mask = make_mask([3349,3391], perimeters, interiors)
+        perimeters, interiors = make_vertices_lists(loads(image_shapes), [0, xmax], [ymin, 0], size=[out_shape[0], out_shape[1]])
+        mask = make_mask([out_shape[0], out_shape[1]], perimeters, interiors)
 
         # there's a bug somewhere, y axis is inverted
         mask = np.flip(mask, 0)
@@ -476,7 +479,7 @@ def make_masks(target_class='Trees'):
         print(f'mask shape: {mask.shape}')
         print(f'nonzero_values: {np.count_nonzero(mask)}')
 
-        np.save(parent_folder + f'{image_id}_mask.npy', mask)
+        np.save(parent_folder + f'{target_class}{image_id}_mask.npy', mask)
     
     return
 
@@ -582,11 +585,11 @@ if __name__ == '__main__':
     for i in range(3,19):
         np.save(f'band{i}.npy', a['arr_0'][:, :, i])'''
 
-    #make_masks('Buildings')
+    make_masks('Buildings')
 
     predict = True
 
-    x, y = make_clipped_images(number=40, mask_type="Buildings", save=False, channels_out=3)
+    x, y = make_clipped_images(number=400, mask_type="Buildings", save=False, channels_out=3)
 
     x = np.asarray(x).astype(np.float32)
     y = np.asarray(y).astype(bool)
@@ -596,7 +599,7 @@ if __name__ == '__main__':
 
         predicts = model.predict(x[:20])
 
-        show_side_by_side2(predicts[0], y[0], x[0])
+        show_side_by_side2(predicts[0], y[0], x[0], save_path='buildings_model_test.png')
 
     np.save('Buildings_images.npy', x)
     np.save('Buildings_masks.npy', y)
