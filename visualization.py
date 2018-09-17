@@ -38,19 +38,23 @@ def show_side_by_side():
     plt.show()
 
 #show_side_by_side()
-def show_side_by_side2():
-    a = np.load('6040_2_2_pred_157.npy')
-    b = np.load('/home/dlahtou/6040_2_2_mask_157.npy')
-    c = np.load('/home/dlahtou/6040_2_2_clip_157.npy')
-
-    print(a.shape)
+def show_side_by_side2(pred='6040_2_2_pred_157.npy', mask='/home/dlahtou/6040_2_2_mask_157.npy', clip='/home/dlahtou/6040_2_2_clip_157.npy', save_path=None):
+    if isinstance(pred, str):
+        a = np.load(pred)
+        b = np.load(mask)
+        c = np.load(clip)
+        a = a > 0.121
+    else:
+        a = pred
+        b = mask
+        c = clip
 
     fig = plt.figure()
     fig.add_subplot(1,3,3)
     plt.imshow(np.squeeze(a, 2), cmap='Reds', alpha=0.8)
     #plt.axis('off')
     plt.axis('off')
-    plt.title('Output Labels')
+    plt.title('Predicted Labels')
     fig.add_subplot(1,3,1)
     plt.imshow(c[:,:,:3], cmap='Greens')
     plt.tick_params(
@@ -66,12 +70,22 @@ def show_side_by_side2():
     plt.title('Raw Input')
     fig.add_subplot(1,3,2)
     plt.imshow(c[:,:,:3], cmap='Greens')
-    plt.imshow(np.squeeze(a, 2), cmap='Reds', alpha=0.5)
+    plt.imshow(np.squeeze(b, 2), cmap='Reds', alpha=0.5)
     plt.axis('off')
-    plt.title('Identify Target')
-    fig.savefig('TEST.png', transparent=True)
-    plt.show()
+    plt.title('Ground Truth Mask + Raw Input')
+    if save_path:
+        fig.savefig(save_path, transparent=True)
+    else:
+        plt.show()
+
 #show_side_by_side2()
+
+preds = np.load('/home/dlahtou/trees_predicts.npy')
+masks = np.load('/home/dlahtou/trees_predicts.npy')
+clips = np.load('trees_images.npy')
+
+for i in range(20):
+    show_side_by_side2(preds[i], masks[i], clips[i])
 
 
 def rescale_image_values(img):
@@ -102,7 +116,7 @@ def rescale2(img):
     img = img / totals[:,:, np.newaxis]
 
     return img
-
+'''
 ds = gdal.Open('data/three_band/6040_2_2.tif', GA_ReadOnly)
 ds_array = ds.ReadAsArray()
 
@@ -117,3 +131,4 @@ plt.imshow(mask, cmap='Greens', alpha=0.5)
 
 plt.axis('off')
 fig.savefig('full_sat_image_with_mask.png', transparent=True)
+'''

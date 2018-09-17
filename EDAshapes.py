@@ -22,6 +22,7 @@ from shapely.wkt import loads
 from keras.losses import binary_crossentropy
 from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
+from visualization import show_side_by_side2
 
 with open('data/grid_sizes.csv', 'r') as open_file:
     grids = pd.read_csv(open_file)
@@ -286,9 +287,9 @@ def jaccard(img1, img2):
     return 1 - (intersection / union)    
 
 
-def train_keras_model(x, y, n_dims=20):
+def train_keras_model(x, y, n_channels=20):
     with tf.device('/gpu:0'):
-        inputs = Input((256,256,n_dims))
+        inputs = Input((256,256,n_channels))
 
         layer_1 = Conv2D(64, [3, 3], activation='relu', padding='same')(inputs)
         layer_2 = Conv2D(64, [3, 3], activation='relu', padding='same')(layer_1)
@@ -479,7 +480,7 @@ def make_masks(target_class='Trees'):
     
     return
 
-def make_clipped_images(mask_type='Buildings', save=True, number=600, sq_dims=256, package=None):
+def make_clipped_images(mask_type='Buildings', save=True, number=600, sq_dims=256, channels_out=20):
     image_IDs = get_image_IDs()
 
     clipped_shapes_folder = f'data/clipped_masks/{mask_type}'
@@ -505,15 +506,16 @@ def make_clipped_images(mask_type='Buildings', save=True, number=600, sq_dims=25
         print(f'image {image_id}: {image_array.shape}')
         
         try:
-            image_mask = np.load(f'data/masks/{mask_type}/{image_id}_mask.npy')
+            image_mask = np.load(f'data/masks/{mask_type}/{mask_type}{image_id}_mask.npy')
         except:
+            print(f'mask {image_id} not found!')
             continue
         print(f'mask {image_id}: {image_mask.shape}')
         print(np.count_nonzero(image_mask))
 
         for i in range(13):
             for j in range(13):
-                clipped_image = image_array[i*sq_dims:(i+1)*sq_dims, j*sq_dims:(j+1)*sq_dims, :]
+                clipped_image = image_array[i*sq_dims:(i+1)*sq_dims, j*sq_dims:(j+1)*sq_dims, :channels_out]
                 clipped_mask = image_mask[i*sq_dims:(i+1)*sq_dims, j*sq_dims:(j+1)*sq_dims]
                 if np.count_nonzero(clipped_mask) == 0:
                     continue
@@ -582,21 +584,23 @@ if __name__ == '__main__':
 
     #make_masks('Buildings')
 
-    number = 40
     predict = True
 
-    x, y = make_clipped_images_green_masks(number=40)
+    x, y = make_clipped_images(number=40, mask_type="Buildings", save=False, channels_out=3)
 
     x = np.asarray(x).astype(np.float32)
     y = np.asarray(y).astype(bool)
 
     if predict:
-        model = train_keras_model(np.asarray(x), np.asarray(y), n_dims=3)
+        model = train_keras_model(np.asarray(x), np.asarray(y), n_channels=3)
 
-        predicts = model.predict(x[:number])
-        np.save('trees_predicts.npy', predicts)
+        predicts = model.predict(x[:20])
 
-        print(predicts)
+        show_side_by_side2(predicts[0], y[0], x[0])
+
+    np.save('Buildings_images.npy', x)
+    np.save('Buildings_masks.npy', y)
+    np.save('Buildings_predicts.npy', predicts)
     
     # at one point, I ran this to make a 19-channel image for each file
     #for ID in image_IDs:
