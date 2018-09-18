@@ -45,3 +45,5 @@ for images in zip(predicts, masks):
     jaccard_unions.append(union)
 
 print(f'jaccard index: {sum(jaccard_ints) / sum(jaccard_unions)}')
+
+np.save('jaccards.npy', np.asarray([jaccard_ints, jaccard_unions]))
