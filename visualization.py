@@ -4,6 +4,8 @@ from osgeo import gdal
 from osgeo.gdalconst import GA_ReadOnly
 from keras.models import load_model
 
+threshold = 0.5
+
 def show_side_by_side():
     a = np.load('/home/dlahtou/6040_2_2_mask_157.npy')
     b = np.load('/home/dlahtou/6040_2_2_clip_157.npy')
@@ -12,7 +14,7 @@ def show_side_by_side():
 
     fig = plt.figure()
     fig.add_subplot(1,3,3)
-    plt.imshow(np.squeeze(a, 2), cmap='Reds', alpha=0.8)
+    plt.imshow(np.squeeze(a, 2), cmap='Greens', alpha=0.8)
     #plt.axis('off')
     plt.axis('off')
     plt.title('Output Labels')
@@ -31,27 +33,29 @@ def show_side_by_side():
     plt.title('Raw Input')
     fig.add_subplot(1,3,2)
     plt.imshow(b[:,:,:3])
-    plt.imshow(np.squeeze(a, 2), cmap='Reds', alpha=0.5)
+    plt.imshow(np.squeeze(a, 2), cmap='Greens', alpha=0.5)
     plt.axis('off')
     plt.title('Identify Target')
     fig.savefig('TEST.png', transparent=True)
     plt.show()
 
 #show_side_by_side()
-def show_side_by_side2(pred='6040_2_2_pred_157.npy', mask='/home/dlahtou/6040_2_2_mask_157.npy', clip='/home/dlahtou/6040_2_2_clip_157.npy', save_path=None):
+def show_side_by_side2(pred='6040_2_2_pred_157.npy', mask='/home/dlahtou/6040_2_2_mask_157.npy', clip='/home/dlahtou/6040_2_2_clip_157.npy', save_path=None, image_num='NO_NUM'):
     if isinstance(pred, str):
         a = np.load(pred)
         b = np.load(mask)
         c = np.load(clip)
-        a = a > 0.121
+        #a = b
+        #a = a > 0.121
     else:
         a = pred
         b = mask
         c = clip
+        a = a #> threshold
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=[15,10])
     fig.add_subplot(1,3,3)
-    plt.imshow(np.squeeze(a, 2), cmap='Reds', alpha=0.8)
+    plt.imshow(np.squeeze(a, 2), cmap='Greens', alpha=0.8)
     #plt.axis('off')
     plt.axis('off')
     plt.title('Predicted Labels')
@@ -67,10 +71,10 @@ def show_side_by_side2(pred='6040_2_2_pred_157.npy', mask='/home/dlahtou/6040_2_
     for spine in plt.gca().spines.values():
         spine.set_visible(False)
     plt.xticks([0,256], ['0', '80m'])
-    plt.title('Raw Input')
+    plt.title(f'Raw Input {image_num}')
     fig.add_subplot(1,3,2)
     plt.imshow(c[:,:,:3], cmap='Greens')
-    plt.imshow(np.squeeze(b, 2), cmap='Reds', alpha=0.5)
+    plt.imshow(np.squeeze(b, 2), cmap='Greens', alpha=0.5)
     plt.axis('off')
     plt.title('Ground Truth Mask + Raw Input')
     if save_path:
@@ -78,15 +82,93 @@ def show_side_by_side2(pred='6040_2_2_pred_157.npy', mask='/home/dlahtou/6040_2_
     else:
         plt.show()
 
-#show_side_by_side2()
+show_side_by_side2(save_path='trees_sample_output.png', image_num='Image')
 
-'''preds = np.load('/home/dlahtou/trees_predicts.npy')
-masks = np.load('/home/dlahtou/trees_predicts.npy')
-clips = np.load('trees_images.npy')
+sss=False
+showall_masks=False
 
-for i in range(20):
-    show_side_by_side2(preds[i], masks[i], clips[i])'''
+preds = np.load('/home/dlahtou/Buildings_predicts2.npy')
+masks = np.load('/home/dlahtou/Buildings_masks2.npy')
+clips = np.load('/home/dlahtou/Buildings_images2.npy')
 
+show_side_by_side2(pred=preds[7], mask=masks[7], clip=clips[7], save_path='buildings_sample_output.png', image_num='Image')
+
+if sss:
+    for i in range(20):
+        show_side_by_side2(preds[i], masks[i], clips[i], image_num=i)
+
+def overlay_masks(pred, mask, image_num="NO IMAGE NUM PROVIDED"):
+    image = np.zeros((pred.shape[0], pred.shape[1], 3))
+    image[:,:,0] = np.squeeze(pred > threshold, 2)
+    image[:,:,1] = np.squeeze(mask, 2) 
+
+    fig = plt.figure()
+    plt.imshow(image)
+    plt.title(f'image {image_num}')
+    plt.axis('off')
+    plt.show()
+
+def jaccard(img1, img2):
+    intersection = np.sum(np.multiply(img1, img2))
+    union = np.sum(np.add(img1, img2)) - intersection
+
+    if not union:
+        return 1
+
+    return (intersection / union)   
+
+def overlay_masks2(pred, mask, clip, save_path='overlay_sample_output.png'):
+    pred = np.squeeze(pred > threshold, 2).astype(int)
+    mask = np.squeeze(mask, 2).astype(int)
+
+    print(np.unique(mask))
+    print(np.unique(pred))
+
+    print(f'jaccard index: {jaccard(pred, mask)}')
+
+    fig = plt.figure(figsize=[15,10])
+    fig.add_subplot(1,4,1)
+    plt.imshow(clip)
+    plt.tick_params(
+        axis='y',
+        which='both', 
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False)
+    for spine in plt.gca().spines.values():
+        spine.set_visible(False)    
+    plt.xticks([0,256], ['0', '80m'])
+    plt.title(f'Raw Input Image')
+
+    fig.add_subplot(1,4,2)
+    plt.imshow(mask, cmap='Greens')
+    plt.axis('off')
+    plt.title('Ground Truth Mask')
+
+    fig.add_subplot(1,4,3)
+    plt.imshow(pred, cmap='Reds')
+    plt.axis('off')
+    plt.title('Predicted Labels')
+
+    # overlaid RG(B) masks
+    fig.add_subplot(1, 4, 4)
+    image = np.zeros((pred.shape[0], pred.shape[1], 3))
+    image[:,:,0] = pred*0.8
+    image[:,:,1] = mask*0.7
+    plt.imshow(image)
+    plt.axis('off')
+    plt.title('Overlaid Mask + Predictions')
+
+    fig.savefig(save_path, transparent=True)
+
+    plt.show()
+
+if showall_masks:
+    for i in range(20):
+        overlay_masks(preds[i], masks[i], image_num=i)
+
+overlay_masks2(preds[7], masks[7], clips[7])
 
 def rescale_image_values(img):
     shape1 = img.shape
