@@ -29,5 +29,5 @@ def predict_mask():
 
     np.save('6040_2_2_pred_157.npy', rak)
 
-# my test change
+# my test change 2
 predict_mask()
