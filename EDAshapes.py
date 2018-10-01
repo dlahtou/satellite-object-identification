@@ -573,7 +573,11 @@ def run_big_model(mask_type='Buildings'):
 
     model = train_keras_model(np.asarray(x), np.asarray(y))
 
+    return model
+
 if __name__ == '__main__':
+
+    object_class = "Tracks"
     
 
     '''image_IDs = get_image_IDs()
@@ -585,11 +589,11 @@ if __name__ == '__main__':
     for i in range(3,19):
         np.save(f'band{i}.npy', a['arr_0'][:, :, i])'''
 
-    make_masks('Buildings')
+    make_masks(object_class)
 
     predict = True
 
-    x, y = make_clipped_images(number=400, mask_type="Buildings", save=False, channels_out=3)
+    x, y = make_clipped_images(number=400, mask_type=object_class, save=False, channels_out=3)
 
     x = np.asarray(x).astype(np.float32)
     y = np.asarray(y).astype(bool)
@@ -599,11 +603,11 @@ if __name__ == '__main__':
 
         predicts = model.predict(x[:20])
 
-        show_side_by_side2(predicts[0], y[0], x[0], save_path='buildings_model_test.png')
+        show_side_by_side2(predicts[0], y[0], x[0], save_path=f'{object_class}_model_test.png')
 
-    np.save('Buildings_images.npy', x)
-    np.save('Buildings_masks.npy', y)
-    np.save('Buildings_predicts.npy', predicts)
+    np.save(f'{object_class}_images.npy', x)
+    np.save(f'{object_class}_masks.npy', y)
+    np.save(f'{object_class}_predicts.npy', predicts)
     
     # at one point, I ran this to make a 19-channel image for each file
     #for ID in image_IDs:
