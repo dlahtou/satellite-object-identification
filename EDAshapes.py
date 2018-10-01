@@ -442,7 +442,9 @@ def save_multiband_image(image_id):
 
 def make_masks(target_class='Trees'):
     classes = {'Trees': 5,
-                'Buildings': 1}
+                'Buildings': 1,
+                'Roads': 3,
+                'Tracks': 4}
 
 
     image_IDs = get_image_IDs()
