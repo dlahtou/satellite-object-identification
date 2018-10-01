@@ -82,20 +82,20 @@ def show_side_by_side2(pred='6040_2_2_pred_157.npy', mask='/home/dlahtou/6040_2_
     else:
         plt.show()
 
-show_side_by_side2(save_path='trees_sample_output.png', image_num='Image')
+'''show_side_by_side2(save_path='trees_sample_output.png', image_num='Image')
 
 sss=False
 showall_masks=False
 
 preds = np.load('/home/dlahtou/Buildings_predicts2.npy')
 masks = np.load('/home/dlahtou/Buildings_masks2.npy')
-clips = np.load('/home/dlahtou/Buildings_images2.npy')
+clips = np.load('/home/dlahtou/Buildings_images2.npy')'''
 
-show_side_by_side2(pred=preds[7], mask=masks[7], clip=clips[7], save_path='buildings_sample_output.png', image_num='Image')
+# show_side_by_side2(pred=preds[7], mask=masks[7], clip=clips[7], save_path='buildings_sample_output.png', image_num='Image')
 
-if sss:
+'''if sss:
     for i in range(20):
-        show_side_by_side2(preds[i], masks[i], clips[i], image_num=i)
+        show_side_by_side2(preds[i], masks[i], clips[i], image_num=i)'''
 
 def overlay_masks(pred, mask, image_num="NO IMAGE NUM PROVIDED"):
     image = np.zeros((pred.shape[0], pred.shape[1], 3))
@@ -168,7 +168,7 @@ if showall_masks:
     for i in range(20):
         overlay_masks(preds[i], masks[i], image_num=i)
 
-overlay_masks2(preds[7], masks[7], clips[7])
+# overlay_masks2(preds[7], masks[7], clips[7])
 
 def rescale_image_values(img):
     shape1 = img.shape
