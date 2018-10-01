@@ -515,7 +515,7 @@ def make_clipped_images(mask_type='Buildings', save=True, number=600, sq_dims=25
         print(f'image {image_id}: {image_array.shape}')
         
         try:
-            image_mask = np.load(f'data/masks/{mask_type}/{mask_type}{image_id}_mask.npy')
+            image_mask = np.load(f'data/masks/{mask_type}/{image_id}_mask.npy')
         except:
             print(f'mask {image_id} not found!')
             continue
