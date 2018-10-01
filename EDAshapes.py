@@ -485,7 +485,7 @@ def make_masks(target_class='Trees'):
         print(f'mask shape: {mask.shape}')
         print(f'nonzero_values: {np.count_nonzero(mask)}')
 
-        np.save(parent_folder + f'{target_class}{image_id}_mask.npy', mask)
+        np.save(parent_folder + f'/{image_id}_mask.npy', mask)
     
     return
 
