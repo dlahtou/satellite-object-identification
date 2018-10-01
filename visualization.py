@@ -164,9 +164,9 @@ def overlay_masks2(pred, mask, clip, save_path='overlay_sample_output.png'):
 
     plt.show()
 
-if showall_masks:
+'''if showall_masks:
     for i in range(20):
-        overlay_masks(preds[i], masks[i], image_num=i)
+        overlay_masks(preds[i], masks[i], image_num=i)'''
 
 # overlay_masks2(preds[7], masks[7], clips[7])
 
