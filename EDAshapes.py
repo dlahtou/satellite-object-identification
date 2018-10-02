@@ -522,8 +522,10 @@ def make_clipped_images(mask_type='Buildings', save=True, number=600, sq_dims=25
         print(f'mask {image_id}: {image_mask.shape}')
         print(np.count_nonzero(image_mask))
 
-        for i in range(13):
-            for j in range(13):
+        slices_num = image_array.shape[0] // sq_dims
+
+        for i in range(slices_num):
+            for j in range(slices_num):
                 clipped_image = image_array[i*sq_dims:(i+1)*sq_dims, j*sq_dims:(j+1)*sq_dims, :channels_out]
                 clipped_mask = image_mask[i*sq_dims:(i+1)*sq_dims, j*sq_dims:(j+1)*sq_dims]
                 if np.count_nonzero(clipped_mask) == 0:
