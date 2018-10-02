@@ -640,6 +640,13 @@ if __name__ == '__main__':
     x = np.asarray(x).astype(np.float32)
     y = np.asarray(y).astype(bool)
 
+    def unison_shuffled_copies(a, b):
+        assert len(a) == len(b)
+        p = np.random.permutation(len(a))
+        return a[p], b[p]
+    
+    x, y = unison_shuffled_copies(x, y)
+
     if predict:
         model = train_keras_model(np.asarray(x), np.asarray(y), n_channels=3, sq_dims=1024)
 
