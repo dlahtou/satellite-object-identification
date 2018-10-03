@@ -643,7 +643,7 @@ if __name__ == '__main__':
 
     predict = True
 
-    x, y = make_clipped_images(number=40, mask_type=object_class, save=False, channels_out=3, sq_dims=1024)
+    x, y = make_clipped_images(number=500, mask_type=object_class, save=False, channels_out=3, sq_dims=256)
 
     x = np.asarray(x).astype(np.float32)
     y = np.asarray(y).astype(bool)
@@ -656,7 +656,7 @@ if __name__ == '__main__':
     x, y = unison_shuffled_copies(x, y)
 
     if predict:
-        model = train_keras_model(np.asarray(x), np.asarray(y), n_channels=3, sq_dims=1024)
+        model = train_keras_model(np.asarray(x), np.asarray(y), n_channels=3, sq_dims=256)
 
         predicts = model.predict(x[:20])
 
