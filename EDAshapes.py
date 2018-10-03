@@ -627,7 +627,7 @@ def run_big_model(mask_type='Buildings'):
 
 if __name__ == '__main__':
 
-    object_class = "Tracks"
+    object_class = "Buildings"
     
 
     '''image_IDs = get_image_IDs()
