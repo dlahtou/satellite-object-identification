@@ -138,11 +138,10 @@ def make_vertices_lists(polygons, x_range, y_range, size=[256, 256]):
                     size, x_range, y_range)
                     for polygon in polygons]
     
-    interiors = [get_pixel_coords(format_coords(polygon.interior.coords),
+    interiors = [get_pixel_coords(format_coords(polygon.coords),
                     size, x_range, y_range)
                     for exterior in polygons
-                    for polygon in exterior.interiors
-                    if not isinstance(polygon, shapely.geometry.polygon.LinearRing)]
+                    for polygon in exterior.interiors]
     
     return perimeters, interiors
 
@@ -627,7 +626,7 @@ def run_big_model(mask_type='Buildings'):
 
 if __name__ == '__main__':
 
-    object_class = "Buildings"
+    object_class = "Tracks"
     
 
     '''image_IDs = get_image_IDs()
