@@ -286,7 +286,7 @@ def jaccard(img1, img2):
     return 1 - (intersection / union)    
 
 
-def train_keras_model(x, y, n_channels=20, save_filepath='unnamed_model.h5', sq_dims=256):
+def train_keras_model(x, y, n_channels=20, save_name='Trees', sq_dims=256):
     with tf.device('/gpu:0'):
         inputs = Input((sq_dims, sq_dims, n_channels))
 
@@ -377,7 +377,7 @@ def train_keras_model(x, y, n_channels=20, save_filepath='unnamed_model.h5', sq_
 
         stale = EarlyStopping(patience=3, verbose=1)
 
-        checkpoint_model = ModelCheckpoint(save_filepath, verbose=1, save_best_only=True)        
+        checkpoint_model = ModelCheckpoint(f'{save_name}_model.h5', verbose=1, save_best_only=True)        
 
         #adam = Adam(lr=0.01)
 
@@ -385,7 +385,7 @@ def train_keras_model(x, y, n_channels=20, save_filepath='unnamed_model.h5', sq_
 
         model.fit(x=x, y=y, epochs=8, callbacks=[stale, checkpoint_model], batch_size=4, validation_split=0.1)
 
-        model.save(save_filepath)
+        model.save(f'{save_name}_model.h5')
 
     return model
 
