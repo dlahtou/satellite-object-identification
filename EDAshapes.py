@@ -247,7 +247,7 @@ def break_shapes(wkt, size=[3391, 3349], x_width=xmax, y_height=ymin, filename="
             '''
             with open(join(out_folder, 'wkt'+str(counter)+'.pkl'), 'wb') as open_file:
                 pkl.dump(int_wkt, open_file)
-            '''
+            ''' 
 
             # TODO: save binary mask image
             perimeters, interiors = make_vertices_lists(loads(int_wkt), x_range=[xmin, xmax], y_range=[ymin, ymax])
@@ -626,7 +626,7 @@ def run_big_model(mask_type='Buildings'):
 
 if __name__ == '__main__':
 
-    object_class = "Tracks"
+    object_class = "Trees"
     
 
     '''image_IDs = get_image_IDs()
